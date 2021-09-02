@@ -5,20 +5,15 @@ import time
 import datetime
 import json
 
+
 class Stock:
     def __init__ (self, **kwargs):
         self.__dict__.update(kwargs)
         
 
-numberOfFiles = 5
-delay = 2
 
-try:
-    shutil.rmtree("stock_dump")
-except:
-    print ("error deleating stock dump. Ignore if stock_dump/ didn't already exist") #should be safe to ignore if dump didn't already exist
 
-os.mkdir("stock_dump")
+
 
 
 stocks = ( #stock objects ready to be JSONized
@@ -30,14 +25,27 @@ stocks = ( #stock objects ready to be JSONized
     #["VNM", "VanEck Vietnam ETF",19.75]
 )
 
-for i in range (1, numberOfFiles + 1):
-    print (i)
-    for stock in stocks:
-        path = "dump/{ticker}{num:d}.json".format(ticker = stock.ticker, num = i)
-        f = open(path, "w") #opens i.json if exists, creates it if not
-        change = np.random.normal(loc = 1, scale = 0.001) #normal distribution with an SD of 1%
-        stock.price *= change
-        stock.marketCap *= change    
-        stock.timestamp = datetime.datetime.now().__str__()
-        f.write(json.dumps(stock.__dict__, indent=4)) #converts stock object to a dictionary, encodes it with JSON, and writes it to file
-    time.sleep(.1)
+def clean():
+    try:
+        shutil.rmtree("stock_dump") #rm -rf stock_dump
+    except:
+        print ("error deleating stock dump. Ignore if 'stock_dump/' didn't already exist") #should be safe to ignore if dump didn't already exist
+
+    os.mkdir("stock_dump")
+
+def produce(numberOfFiles, delay):
+    for i in range (1, numberOfFiles + 1):
+        print (i)
+        for stock in stocks:
+            path = "stock_dump/{ticker}{num:d}.json".format(ticker = stock.ticker, num = i)
+            f = open(path, "w") #opens i.json if exists, creates it if not
+            change = np.random.normal(loc = 1, scale = 0.001) #normal distribution with an SD of 1%
+            stock.price *= change
+            stock.marketCap *= change    
+            stock.timestamp = datetime.datetime.now().__str__()
+            f.write(json.dumps(stock.__dict__, indent=4)) #converts stock object to a dictionary, encodes it with JSON, and writes it to file
+        time.sleep(delay)
+
+if __name__ == "__main__":
+    clean()
+    produce(10, 0)
