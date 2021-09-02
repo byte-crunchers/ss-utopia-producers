@@ -40,4 +40,4 @@ for i in range (1, numberOfFiles + 1):
         stock.marketCap *= change    
         stock.timestamp = datetime.datetime.now().__str__()
         f.write(json.dumps(stock.__dict__, indent=4)) #converts stock object to a dictionary, encodes it with JSON, and writes it to file
-    time.sleep(.1)
+    time.sleep(.1)
