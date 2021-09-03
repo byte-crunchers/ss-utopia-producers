@@ -1,15 +1,13 @@
-import traceback
-from time import process_time
-
 from mysql.connector import Error
 
 from DatabaseHelper import *
 from GenerateUserData import generate_username
-from GenerateUserData import get_user_data
 
 
-def populate(user_data):
+def populate_users(user_data):
     connection = connect()
+    duplicate_count = 0
+    dd_count = 0
     query = "insert into users(username, email, password, first_name, last_name, is_admin) values(%s, %s, %s, %s, %s," \
             "%s) "
     curs = connection.cursor()
@@ -18,29 +16,21 @@ def populate(user_data):
         try:
             curs.execute(query, values)
         except mysql.connector.errors.IntegrityError:
-            print("Duplicate entry found, skipping addition and attempting to get new username...")
+            duplicate_count += 1
             # Find a unique username that is not in the database
             while True:
                 try:
                     values = (
                         generate_username()[0], user.email, user.password, user.f_name, user.l_name, user.is_admin)
                     curs.execute(query, values)
-                    print("Replacement username found successfully, data inserted")
                     break
                 except mysql.connector.errors.IntegrityError:
-                    print("The Generator returned another duplicate, WHAT ARE THE CHANCES!!!")
+                    dd_count += 1
                     continue
         except Error:
             print("There was a problem writing to the database. ")
             traceback.print_exc()
-
+    print("\n{} duplicate usernames were generated and replaced!".format(duplicate_count))
+    print("{} double duplicate usernames were generated and replaced!".format(dd_count))
     connection.commit()
     connection.close()
-
-
-if __name__ == '__main__':
-    time_start = process_time()
-    users = get_user_data(100)
-    populate(users)
-    time_stop = process_time()
-    print("The process took about {:0.02f} seconds".format(time_stop - time_start))

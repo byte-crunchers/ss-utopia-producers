@@ -25,9 +25,6 @@ def connect():
         print("There was a problem connecting to the database, please make sure the database information is correct!")
     if con_try.is_connected():
         return con_try
-    else:
-        print("There was a problem connecting to the database, please make sure the database information is correct!")
-        print(Error)
 
 
 # This method clears the table of all data and resets the auto increment
@@ -81,7 +78,3 @@ def add_test_user():
         print("There was a problem adding the single test user")
     conn.commit()
     conn.close()
-
-
-if __name__ == '__main__':
-    connect()

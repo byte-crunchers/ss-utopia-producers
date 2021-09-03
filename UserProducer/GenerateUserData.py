@@ -17,8 +17,9 @@ class User:
 
 
 def get_username():
-    random_sufix = random.randint(0, 10000)
-    return generate_username(1)[0] + str(random_sufix)
+    # random_sufix = random.randint(0, 10)
+    # return generate_username(1)[0] + str(random_sufix)
+    return generate_username(1)[0]
 
 
 def get_email():
