@@ -2,3 +2,5 @@ stock-dump/
 .vscode/
 .pytest_cache
 __pycache__
+UserProducer/.coverage
+UserProducer/htmlcov
