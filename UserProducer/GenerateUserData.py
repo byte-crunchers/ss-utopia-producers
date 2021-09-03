@@ -22,8 +22,30 @@ def get_username():
     return generate_username(1)[0]
 
 
-def get_email():
-    return fake.email()
+# This method generates a random email based on the first and last name
+def get_email(f_name, l_name):
+    email = None
+    suffix = fake.email().split("@", 1)[1]
+    chance = random.randint(0, 8)
+    if chance == 0:
+        email = f_name[0].lower() + "." + l_name[0:].lower()
+    elif chance == 1:
+        email = f_name.lower() + "." + l_name.lower()
+    elif chance == 2:
+        email = f_name.lower() + l_name.lower()
+    elif chance == 3:
+        email = l_name.lower() + "." + f_name.lower()
+    elif chance == 4:
+        email = l_name.lower() + f_name.lower()
+    elif chance == 5:
+        email = f_name.lower() + l_name[0].lower()
+    elif chance == 6:
+        email = l_name.lower()[0] + "." + f_name.lower()
+    else:
+        email = l_name.lower()[0] + f_name.lower()
+    email += str(random.randint(0, 10000))
+    email += "@" + suffix
+    return email
 
 
 def get_pass():
@@ -52,5 +74,11 @@ def get_is_admin():
 def get_user_data(num_of_users):
     users = []
     for x in range(num_of_users):
-        users.append(User(get_username(), get_email(), get_pass(), get_fname(), get_lname(), get_is_admin()))
+        f_name = get_fname()
+        l_name = get_lname()
+        users.append(User(get_username(), get_email(f_name, l_name), get_pass(), f_name, l_name, get_is_admin()))
     return users
+
+
+if __name__ == '__main__':
+    print(get_email("Wyatt", "Meehan"))

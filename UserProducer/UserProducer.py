@@ -2,6 +2,7 @@ from mysql.connector import Error
 
 from DatabaseHelper import *
 from GenerateUserData import generate_username
+from GenerateUserData import get_email
 
 
 def populate_users(user_data):
@@ -21,7 +22,8 @@ def populate_users(user_data):
             while True:
                 try:
                     values = (
-                        generate_username()[0], user.email, user.password, user.f_name, user.l_name, user.is_admin)
+                        generate_username()[0], get_email(user.f_name, user.l_name), user.password, user.f_name,
+                        user.l_name, user.is_admin)
                     curs.execute(query, values)
                     break
                 except mysql.connector.errors.IntegrityError:
@@ -30,7 +32,7 @@ def populate_users(user_data):
         except Error:
             print("There was a problem writing to the database. ")
             traceback.print_exc()
-    print("\n{} duplicate usernames were generated and replaced!".format(duplicate_count))
-    print("{} double duplicate usernames were generated and replaced!".format(dd_count))
+    print("\n{} duplicate usernames or emails were generated and replaced!".format(duplicate_count))
+    print("{} double duplicate usernames or emails were generated and replaced!".format(dd_count))
     connection.commit()
     connection.close()

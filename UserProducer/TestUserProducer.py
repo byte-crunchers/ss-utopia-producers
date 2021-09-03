@@ -1,9 +1,9 @@
 import unittest
 
 from mysql.connector import MySQLConnection
+from GenerateUserData import get_user_data
 
 from UserProducer import *
-from GenerateUserData import get_user_data
 
 
 # This class Tests the UserProducer and related helper functions
@@ -40,7 +40,8 @@ class TestClass(unittest.TestCase):
         clear_table("users")  # Clear the table
         self.assertEqual(count_rows("users"), 0)  # Test that table is empty
 
-    # This method tests duplicate username exception handling by adding a large number of rows (may take a minute)
+    # This method tests duplicate username or email
+    # exception handling by adding a large number of rows (may take a minute)
     def test_user_producer_stress(self):
         populate_users(get_user_data(10000))  # Add 10,000 users to the database
         self.assertEqual(count_rows("users"), 10000)  # Test the users were all added
