@@ -66,22 +66,22 @@ def generate(num_rows, conn):
         try:
             cur.execute(query, values)
         except mysql.connector.errors.IntegrityError:
-            duplicate_count += 1
             # Find a unique card number that is not in the database
             while True:
                 try:
+                    print(values)
                     card.build_number()
                     values = (card.account, card.num, card.pin, card.cvc1, card.cvc2)
+                    print(values)
                     cur.execute(query, values)
+                    print("collision resolved")
                     break
                 except mysql.connector.errors.IntegrityError:
-                    dd_count += 1
+                    print("new number fails. That's a 1/1,000,000,000,000,000,000 chance!")
                     continue
         except Error:
             print("There was a problem writing to the database. ")
             traceback.print_exc()
-    print("\n{} duplicate card numbers were generated and replaced!".format(duplicate_count))
-    print("{} double duplicate card numbers were generated and replaced!\n".format(dd_count))
     conn.commit()
 
 def connect():
