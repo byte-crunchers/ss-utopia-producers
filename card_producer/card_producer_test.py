@@ -39,4 +39,4 @@ def test_generate_clear():
     cur.execute(query)
     results = cur.fetchall()
     assert len(results) == 500
-    assert results[9][2] #assert that the results (or at least #10) have account type
+    assert results[9][3] #assert that the results (or at least #10) have a cvc number
