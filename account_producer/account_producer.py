@@ -91,3 +91,4 @@ if __name__ == '__main__':
     conn = connect()
     clear(conn)
     generate(100, conn)
+    conn.close()
