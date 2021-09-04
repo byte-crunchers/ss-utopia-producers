@@ -2,6 +2,7 @@ import random
 import traceback
 import mysql
 from mysql.connector import Error
+import json
 
 
 def luhn_checksum(card_number): #shamelessly copied from SO
@@ -80,15 +81,16 @@ def generate(num_rows, conn):
             print("There was a problem writing to the database. ")
             traceback.print_exc()
     print("\n{} duplicate card numbers were generated and replaced!".format(duplicate_count))
-    print("{} double duplicate card numbers were generated and replaced!".format(dd_count))
+    print("{} double duplicate card numbers were generated and replaced!\n".format(dd_count))
     conn.commit()
 
 def connect():
     con_try = None
     try:
-        con_try = mysql.connector.connect(user='root', password='root', #Enter password here
-                                          host='localhost',
-                                          database='bytecrunchers')
+        f = open('dbkey.json', 'r')
+        key = json.load(f)
+        con_try = mysql.connector.connect(user=key["user"], password=key["password"], host=key["host"], database=key["database"])
+        
     except Error:
         print("There was a problem connecting to the database, please make sure the database information is correct!")
     if con_try.is_connected():
