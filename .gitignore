@@ -3,3 +3,5 @@ stock-dump/
 .pytest_cache
 __pycache__
 .coverage
+**/dbkey.json
+
