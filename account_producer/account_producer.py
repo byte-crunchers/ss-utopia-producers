@@ -1,6 +1,7 @@
 import random
 import traceback
 import mysql
+import json
 from mysql.connector import Error
 import datetime
 
@@ -68,9 +69,10 @@ def generate(num_rows, conn):
 def connect():
     con_try = None
     try:
-        con_try = mysql.connector.connect(user='root', password='root', #Enter password here
-                                          host='localhost',
-                                          database='bytecrunchers')
+        f = open('../dbkey.json', 'r')
+        key = json.load(f)
+        con_try = mysql.connector.connect(user=key["user"], password=key["password"], host=key["host"], database=key["database"])
+        
     except Error:
         print("There was a problem connecting to the database, please make sure the database information is correct!")
     if con_try.is_connected():

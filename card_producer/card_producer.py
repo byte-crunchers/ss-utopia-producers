@@ -85,7 +85,7 @@ def generate(num_rows, conn):
 def connect():
     con_try = None
     try:
-        f = open('dbkey.json', 'r')
+        f = open('../dbkey.json', 'r')
         key = json.load(f)
         con_try = mysql.connector.connect(user=key["user"], password=key["password"], host=key["host"], database=key["database"])
         
