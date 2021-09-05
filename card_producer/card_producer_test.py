@@ -38,12 +38,12 @@ def test_generate_clear():
     assert len(cur.fetchall()) == 0 #test clear
     print("test1")
     #force a card_num collision, a 1/1,000,000,000 chance
-    card = Card(678) #with this seed, account 678 has no card. Therefor SQL will not reject it
+    card = Card(1) #with this seed, account 1 has no card. Therefor SQL will not reject it
     print("test2")
-    card.num = 2319235094241688 #gurenteed to be created with this seed
-    query = "INSERT INTO cards VALUES (%s,%s,%s,%s,%s)"
+    card.num = 23192324756947 #gurenteed to be created with this seed
+    query = "INSERT INTO cards VALUES (%s,%s,%s,%s,%s,%s)"
     print("test3")
-    values = (card.account, card.num, card.pin, card.cvc1, card.cvc2)
+    values = (card.account, card.num, card.pin, card.cvc1, card.cvc2, card.exp_date)
     print ("test4")
     cur.execute(query, values)
 

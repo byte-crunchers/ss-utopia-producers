@@ -1,3 +1,4 @@
+import datetime
 import random
 import traceback
 import mysql
@@ -27,6 +28,7 @@ class Card:
                 self.pin = None
             self.cvc1 = random.randint(0,999)
             self.cvc2 = random.randint(0,999)
+            self.exp_date = datetime.date.today() + datetime.timedelta(days = random.randrange(-5,1000))
 
     def build_number(self):
         left15 = '231923' + str(random.randint(0, 999999999))
@@ -48,8 +50,6 @@ def clear(conn):
     #doesn't commit until the generate function
 
 def generate(num_rows, conn):
-    duplicate_count = 0
-    dd_count = 0
     accounts_all = get_accounts(conn)
     if (len(accounts_all) < num_rows):
         print ("ERROR: Not enough accounts in the database to support that many rows \n"\
@@ -57,24 +57,22 @@ def generate(num_rows, conn):
         return 1
     accounts = random.sample(accounts_all, num_rows) #gets a random sampling of accounts
                                                 
-    query = "INSERT INTO cards VALUES (%s,%s,%s,%s,%s)"
+    query = "INSERT INTO cards VALUES (%s,%s,%s,%s,%s,%s)"
     cur = conn.cursor()
     for acc in accounts:
         card = Card(acc[0])
         card.build_number()
-        values = (card.account, card.num, card.pin, card.cvc1, card.cvc2)
+        values = (card.account, card.num, card.pin, card.cvc1, card.cvc2, card.exp_date)
         try:
             cur.execute(query, values)
         except mysql.connector.errors.IntegrityError:
             # Find a unique card number that is not in the database
             while True:
                 try:
-                    print(values)
+                    print("collision - a 1/1,000,000,000 chance")
                     card.build_number()
-                    values = (card.account, card.num, card.pin, card.cvc1, card.cvc2)
-                    print(values)
+                    values = (card.account, card.num, card.pin, card.cvc1, card.cvc2, card.exp_date)
                     cur.execute(query, values)
-                    print("collision resolved")
                     break
                 except mysql.connector.errors.IntegrityError:
                     print("new number fails. That's a 1/1,000,000,000,000,000,000 chance!")
