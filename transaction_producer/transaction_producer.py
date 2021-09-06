@@ -1,6 +1,6 @@
 import random
 import traceback
-import time
+#import time
 import mysql
 import json
 from mysql.connector import Error
@@ -8,12 +8,12 @@ import datetime
 from faker import Faker
 import sys
 
-class Timer:
-    def __init__(self, step):
-        self.step = step
-        self.intime = time.perf_counter()
-    def end(self):
-        print("{step} took {time:f} seconds".format(step=self.step, time=time.perf_counter() - self.intime))
+#class Timer:
+#    def __init__(self, step):
+#        self.step = step
+#        self.intime = time.perf_counter()
+#    def end(self):
+#        print("{step} took {time:f} seconds".format(step=self.step, time=time.perf_counter() - self.intime))
 
 
 class Transaction:
@@ -107,7 +107,6 @@ def connect():
         return con_try
     else:
         print("There was a problem connecting to the database, please make sure the database information is correct!")
-        print(Error)
 
 
 def clear_trans(conn):
@@ -125,12 +124,8 @@ def clear_card_trans(conn):
     
 
 if __name__ == '__main__':
-    if len(sys.argv) != 3:
-        trans_num = 5000
-        card_num = 5000
-    else:
-        trans_num =  int(sys.argv[1])
-        card_num = int(sys.argv[2])
+    trans_num =  int(sys.argv[1])
+    card_num = int(sys.argv[2])
     conn = connect()
     clear_trans(conn)
     generate_transactions(trans_num, conn)
