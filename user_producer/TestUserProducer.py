@@ -6,7 +6,7 @@ from GenerateUserData import get_user_data
 from UserProducer import *
 
 
-# This class Tests the UserProducer and related helper functions
+# This class Tests the user_producer and related helper functions
 class TestClass(unittest.TestCase):
 
     # This method tests the connect method from DatabaseHelper.py
