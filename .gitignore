@@ -2,5 +2,6 @@ stock-dump/
 .vscode/
 .pytest_cache
 __pycache__
-user_producer/.coverage
-user_producer/htmlcov
+.coverage
+**/dbkey.json
+coverage.xml
