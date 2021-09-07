@@ -15,6 +15,7 @@ import sys
 #    def end(self):
 #        print("{step} took {time:f} seconds".format(step=self.step, time=time.perf_counter() - self.intime))
 
+country_codes = ("US", "VI", "VN", "ZA", "TJ", "TH", "TD", "SY", "SO", "SJ", "RU", "PS", "NG", "MX", "KR", "KP", "JP", "GU", "MP", "CN", "CA", "AS")
 
 class Transaction:
     def __init__(self, fake, account_a, account_b,):
@@ -34,6 +35,7 @@ class Card_Transaction:
         self.cvc1 = cvc1
         self.cvc2 = cvc2
         self.time_stamp = datetime.datetime.now()
+        self.location = random.choice(country_codes)
         
 def get_accounts(conn):
     cur = conn.cursor()
@@ -73,7 +75,7 @@ def generate_card_transactions(num_rows, conn):
     if (len(accounts) == 0 or len(cards) == 0):
         print("ERROR: missing data from database")
         return 1
-    query = "INSERT INTO card_transactions VALUES (0,%s,%s,%s,%s,%s,%s,%s,%s)"
+    query = "INSERT INTO card_transactions VALUES (0,%s,%s,%s,%s,%s,%s,%s,%s,%s)"
     fake = Faker() #this takes about 30ms, so it must be removed from the loop
     cur = conn.cursor()
     for i in range (num_rows):
@@ -86,7 +88,7 @@ def generate_card_transactions(num_rows, conn):
             pass #amazon does not use cvc because they don't care about the consumer
         else:
             trans.cvc2 = card[3]
-        vals = (trans.card_num, trans.merchant_account_id, trans.memo, trans.transfer_value, trans.pin, trans.cvc1, trans.cvc2, trans.time_stamp)
+        vals = (trans.card_num, trans.merchant_account_id, trans.memo, trans.transfer_value, trans.pin, trans.cvc1, trans.cvc2, trans.location, trans.time_stamp)
         try:
             cur.execute(query, vals)
         except Error:
