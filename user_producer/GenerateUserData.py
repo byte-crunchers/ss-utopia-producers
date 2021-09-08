@@ -1,5 +1,6 @@
 import random
 
+import bcrypt
 from faker import Faker
 from random_username.generate import generate_username
 
@@ -49,10 +50,12 @@ def get_email(f_name, l_name):
 
 
 def get_pass():
-    password_length = random.randint(8, 15)
-    possible_characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890"
-    random_character_list = [random.choice(possible_characters) for i in range(password_length)]
-    return "".join(random_character_list)
+    password_length = random.randint(12, 15)
+    possible_characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!#$%&'" \
+                          "()*+,-./:;<=>?@[\]^_`{|}~"
+    password = "".join([random.choice(possible_characters) for i in range(password_length)])
+    hashed = bcrypt.hashpw(password, bcrypt.gensalt())
+    return hashed
 
 
 def get_fname():
@@ -81,4 +84,4 @@ def get_user_data(num_of_users):
 
 
 if __name__ == '__main__':
-    print(get_email("Wyatt", "Meehan"))
+    print(get_pass())

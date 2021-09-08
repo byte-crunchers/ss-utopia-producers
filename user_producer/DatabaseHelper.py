@@ -1,6 +1,7 @@
 import traceback
 
 import mysql
+import json
 from mysql.connector import Error
 
 
@@ -70,7 +71,7 @@ def add_test_user():
     curs = conn.cursor()
     query = "insert into users(username, email, password, first_name, last_name, is_admin) values(%s, %s, %s, %s, " \
             "%s, %s) "
-    values = ("Test user", "Test email", "Test pass", "Test fname", "Test lname", 1)
+    values = ("Test user", "Test email", "$2a$12$Mgk6lVz7bwGINYAnYHtnXe3e3NqTJ20njH.xWVxKer4OeCWFR4Nnm", "Test fname", "Test lname", 1)
     try:
         curs.execute(query, values)
     except Error:

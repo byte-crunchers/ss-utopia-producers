@@ -3,6 +3,8 @@ from mysql.connector import Error
 from DatabaseHelper import *
 from GenerateUserData import generate_username
 from GenerateUserData import get_email
+from GenerateUserData import get_user_data
+from time import process_time
 
 
 def populate_users(user_data):
@@ -18,7 +20,7 @@ def populate_users(user_data):
             curs.execute(query, values)
         except mysql.connector.errors.IntegrityError:
             duplicate_count += 1
-            # Find a unique username that is not in the database
+            # Find a unique username and email that is not in the database
             while True:
                 try:
                     values = (
@@ -36,3 +38,10 @@ def populate_users(user_data):
     print("{} double duplicate usernames or emails were generated and replaced!".format(dd_count))
     connection.commit()
     connection.close()
+
+
+if __name__ == '__main__':
+    start = process_time()
+    populate_users(get_user_data(10))
+    end = process_time()
+    print("time: ", end - start)
