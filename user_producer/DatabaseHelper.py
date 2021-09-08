@@ -2,11 +2,11 @@ import json
 import traceback
 
 import mysql
+import jaydebeapi
 from mysql.connector import Error
 
 
-# !!!!!!IMPORTANT!!!!!!! You must enter the path of a txt file on your local machine that contains the password
-# of the database, You must also enter accurate data for root, host, and database
+# !!!!!!IMPORTANT!!!!!!! You must enter the path of a json file on your local machine that contains the database info
 # This method connects to the data base
 def connect():
     con_try = None
@@ -22,6 +22,16 @@ def connect():
     else:
         print("There was a problem connecting to the database, please make sure the database information is correct!")
         print(Error)
+
+
+# def connect_h2():
+#     connection = jaydebeapi.connect(
+#         "org.h2.Driver",
+#         "jdbc:h2:~/test/users",
+#         ["meehan", "Wyattdoc12345!"],
+#         "C:/Program Files/h2/bin/h2-1.4.199"
+#     )
+#     curs = connection.cursor()
 
 
 # This method clears the table of all data and resets the auto increment
