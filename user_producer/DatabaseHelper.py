@@ -1,7 +1,7 @@
+import json
 import traceback
 
 import mysql
-import json
 from mysql.connector import Error
 
 
@@ -9,23 +9,19 @@ from mysql.connector import Error
 # of the database, You must also enter accurate data for root, host, and database
 # This method connects to the data base
 def connect():
-    password = None
-    try:
-        file = open("C:/Users/meeha/OneDrive/Desktop/SmoothStack/Data/pass.txt", "r")
-        password = file.read()
-        file.close()
-    except IOError:
-        traceback.print_exc()
-        print("There was a problem reading pass.txt, please ensure the path is correct!")
     con_try = None
     try:
-        con_try = mysql.connector.connect(user='root', password=password,  # Enter password here
-                                          host='localhost',
-                                          database='bytecrunchers')
+        f = open('C:/Users/meeha/OneDrive/Desktop/SmoothStack/Data/dbkey.json', 'r')
+        key = json.load(f)
+        con_try = mysql.connector.connect(user=key["user"], password=key["password"], host=key["host"],
+                                          database=key["database"])
     except Error:
         print("There was a problem connecting to the database, please make sure the database information is correct!")
     if con_try.is_connected():
         return con_try
+    else:
+        print("There was a problem connecting to the database, please make sure the database information is correct!")
+        print(Error)
 
 
 # This method clears the table of all data and resets the auto increment
@@ -71,7 +67,8 @@ def add_test_user():
     curs = conn.cursor()
     query = "insert into users(username, email, password, first_name, last_name, is_admin) values(%s, %s, %s, %s, " \
             "%s, %s) "
-    values = ("Test user", "Test email", "$2a$12$Mgk6lVz7bwGINYAnYHtnXe3e3NqTJ20njH.xWVxKer4OeCWFR4Nnm", "Test fname", "Test lname", 1)
+    values = ("Test user", "Test email", "$2a$12$Mgk6lVz7bwGINYAnYHtnXe3e3NqTJ20njH.xWVxKer4OeCWFR4Nnm", "Test fname",
+              "Test lname", 1)
     try:
         curs.execute(query, values)
     except Error:
