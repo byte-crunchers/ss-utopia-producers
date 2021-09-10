@@ -1,12 +1,10 @@
 import random
 import traceback
-import jaydebeapi
-import json
-from jaydebeapi import Error
-import jpype
 import datetime
 from faker import Faker
 import sys
+from connection_helper import connect
+from jaydebeapi import Error
 
 #class Timer:
 #    def __init__(self, step):
@@ -96,19 +94,7 @@ def generate_card_transactions(num_rows, conn):
             traceback.print_exc()
     conn.commit()
 
-def connect():
-    con_try = None
-    try:
-        f = open('../dbkey.json', 'r')
-        key = json.load(f)
-        
-        
-        con_try = con = jaydebeapi.connect("com.mysql.jdbc.Driver", "jdbc:MySQL://localhost/bytecrunchers", ["root", "root"], \
-            "C:/Program Files (x86)/MySQL/Connector J 8.0/mysql-connector-java-8.0.25.jar" )
-        con_try.jconn.setAutoCommit(False)
-    except Error:
-        print("There was a problem connecting to the database, please make sure the database information is correct!")
-    return con_try
+
     
 
 def clear_trans(conn):
