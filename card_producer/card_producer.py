@@ -100,5 +100,5 @@ def connect():
 if __name__ == '__main__':
     conn = connect()
     clear(conn)
-    generate(50, conn)
+    generate(600, conn)
     conn.close()

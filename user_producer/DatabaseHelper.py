@@ -8,17 +8,9 @@ from mysql.connector import Error
 # of the database, You must also enter accurate data for root, host, and database
 # This method connects to the data base
 def connect():
-    password = None
-    try:
-        file = open("C:/Users/meeha/OneDrive/Desktop/SmoothStack/Data/pass.txt", "r")
-        password = file.read()
-        file.close()
-    except IOError:
-        traceback.print_exc()
-        print("There was a problem reading pass.txt, please ensure the path is correct!")
     con_try = None
     try:
-        con_try = mysql.connector.connect(user='root', password=password,  # Enter password here
+        con_try = mysql.connector.connect(user='root', password='root',  # Enter password here
                                           host='localhost',
                                           database='bytecrunchers')
     except Error:

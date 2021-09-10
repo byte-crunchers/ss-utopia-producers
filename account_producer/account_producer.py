@@ -24,7 +24,7 @@ def get_users(conn):
 
 def get_account_types(conn):
     cur = conn.cursor()
-    query = "SELECT id FROM account_type"
+    query = "SELECT id FROM account_types"
     cur.execute(query)
     return cur.fetchall()
 
@@ -92,5 +92,5 @@ def clear(conn):
 if __name__ == '__main__':
     conn = connect()
     clear(conn)
-    generate(100, conn)
+    generate(1000, conn)
     conn.close()
