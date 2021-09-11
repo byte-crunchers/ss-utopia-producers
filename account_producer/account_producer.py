@@ -1,10 +1,19 @@
 import random
 import traceback
-import mysql
 import json
-from mysql.connector import Error
 import datetime
+import jaydebeapi
+from jaydebeapi import Error
 
+def connect():
+    con_try = None
+    try:
+        f = open('../dbkey.json', 'r')
+        key = json.load(f)        
+        con_try = jaydebeapi.connect(key["driver"], key["location"], key["login"], key["jar"] )
+    except Error:
+        print("There was a problem connecting to the database, please make sure the database information is correct!")
+    return con_try
 
 
 class Account:
@@ -24,7 +33,7 @@ def get_users(conn):
 
 def get_account_types(conn):
     cur = conn.cursor()
-    query = "SELECT id FROM account_type"
+    query = "SELECT id FROM account_types"
     cur.execute(query)
     return cur.fetchall()
 
@@ -51,13 +60,13 @@ def generate(num_rows, conn):
         return 1
     users = random.sample(users_all, num_rows//2+1) #gets a random sampling of users
                                                 #//2 means the average user will have two accounts 
-    query = "INSERT INTO accounts VALUES (0,%s,%s,%s,%s,%s,%s)"
+    query = 'INSERT INTO accounts(users_id, account_type, balance, payment_due, due_date, "limit") VALUES (?,?,?,?,?,?)'
     acc_types = get_account_types(conn)
     cur = conn.cursor()
     for i in range (num_rows):
         account = create_account(random.choice(users)[0], random.choice(acc_types)[0]) #takes a random user id and account type
         vals = (account.user, account.account_type, account.balance, account.payment_due,\
-         account.due_date, account.limit)
+         date_to_string(account.due_date), account.limit)
         try:
             cur.execute(query, vals)
         except Error:
@@ -66,31 +75,13 @@ def generate(num_rows, conn):
 
     conn.commit()
 
-def connect():
-    con_try = None
-    try:
-        f = open('../dbkey.json', 'r')
-        key = json.load(f)
-        con_try = mysql.connector.connect(user=key["user"], password=key["password"], host=key["host"], database=key["database"])
-        
-    except Error:
-        print("There was a problem connecting to the database, please make sure the database information is correct!")
-    if con_try.is_connected():
-        return con_try
-    else:
-        print("There was a problem connecting to the database, please make sure the database information is correct!")
-        print(Error)
-
+def date_to_string(date): #differs from str(date) in that it accepts none
+    if date:
+        return str(date)
+    return None
 
 def clear(conn):
     cur = conn.cursor()
     query = "DELETE FROM accounts"
     cur.execute(query)
     #doesn't commit until the generate function
-    
-
-if __name__ == '__main__':
-    conn = connect()
-    clear(conn)
-    generate(100, conn)
-    conn.close()

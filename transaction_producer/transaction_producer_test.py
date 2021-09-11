@@ -1,67 +1,55 @@
 import pytest
+import unittest
 from transaction_producer import *
-from mysql.connector import MySQLConnection
+import jaydebeapi
+import time
 
-def test_connect():
-    conn = connect()
-    assert conn #not none
-    assert isinstance(conn, MySQLConnection)
-    conn.close()
-    assert not conn.is_connected()
+@pytest.fixture(scope="module", autouse=True)
+def connect_h2():
+    con = jaydebeapi.connect("org.h2.Driver", "jdbc:h2:tcp://localhost/~/test;MODE=MySQL", ["sa", ""], "E:/Program Files (x86)/H2/bin/h2-1.4.200.jar" )
+    con.cursor().execute("set schema bytecrunchers")
+    return con
 
-def test_get_accounts():
+
+def test_get_accounts(connect_h2):
     #this test will fail if there are no accounts :<
-    conn = connect()
-    accounts = get_accounts(conn)
+    accounts = get_accounts(connect_h2)
     assert accounts
-    assert len(accounts) > 500
+    assert len(accounts) > 40
     assert accounts[5][0] #tests the fifth returned account to make sure its id is not 0
-    conn.close()
 
-    
-def test_get_cards():
-    conn = connect()
-    cards = get_cards(conn)
+
+def test_get_cards(connect_h2):
+    cards = get_cards(connect_h2)
     assert cards
-    assert len(cards) > 500
-    assert cards[5][1] #tests the fifth returned card to make sure its number is not 0
-    conn.close()
+    assert len(cards) > 20
+    assert cards[5][0] #tests the fifth returned card to make sure its number is not 0
+
 
     
 
-
-def test_generate_clear():
-    conn = connect()
-    clear_trans(conn)
-    cur = conn.cursor()
-    query = "SELECT * FROM transactions"
+def test_generate_clear(connect_h2):
+    clear_trans(connect_h2)
+    cur = connect_h2.cursor()
+    query = 'SELECT * FROM transactions'
     cur.execute(query)
     assert len(cur.fetchall()) == 0 #test clear
-    generate_transactions(500, conn)
-    query = "SELECT * FROM transactions"
+    generate_transactions(200, connect_h2)
+    query = 'SELECT * FROM transactions'
     cur.execute(query)
     results = cur.fetchall()
-    assert len(results) == 500
+    assert len(results) == 200
     assert results[9][3] #assert that the results (or at least #10) have a memo
 
-
-def test_generate_clear_cards():
-    
-    conn = connect()
-    clear_card_trans(conn)
-    cur = conn.cursor()
-    query = "SELECT * FROM card_transactions"
+def test_generate_clear_cards(connect_h2):
+    clear_card_trans(connect_h2)
+    cur = connect_h2.cursor()
+    query = 'SELECT * FROM card_transactions'
     cur.execute(query)
     assert len(cur.fetchall()) == 0 #test clear
-    generate_card_transactions(500, conn)
-    query = "SELECT * FROM card_transactions"
+    generate_card_transactions(300, connect_h2)
+    query = 'SELECT * FROM card_transactions'
     cur.execute(query)
     results = cur.fetchall()
-    assert len(results) == 500
+    assert len(results) == 300
     assert results[9][3] #assert that the results (or at least #10) have a memo
-
-
-
-if __name__ == "__main__":
-    test_generate_clear()
-    test_generate_clear_cards()

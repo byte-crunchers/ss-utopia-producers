@@ -45,9 +45,9 @@ class TestClass(unittest.TestCase):
     def test_user_producer_stress(self):
         populate_users(get_user_data(10000))  # Add 10,000 users to the database
         self.assertEqual(count_rows("users"), 10000)  # Test the users were all added
-        clear_table("users")  # Clear the table
-        self.assertEqual(count_rows("users"), 0)  # Test that table is empty
+        #clear_table("users")  # Clear the table
+        #self.assertEqual(count_rows("users"), 0)  # Test that table is empty
 
 
 if __name__ == '__main__':
-    unittest.main()
+    populate_users(get_user_data(1000))
