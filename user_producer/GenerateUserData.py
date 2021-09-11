@@ -18,8 +18,6 @@ class User:
 
 
 def get_username():
-    # random_sufix = random.randint(0, 10)
-    # return generate_username(1)[0] + str(random_sufix)
     return generate_username(1)[0]
 
 
@@ -54,7 +52,7 @@ def get_pass():
     possible_characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!#$%&'" \
                           "()*+,-./:;<=>?@[\]^_`{|}~"
     password = "".join([random.choice(possible_characters) for i in range(password_length)])
-    hashed = bcrypt.hashpw(password, bcrypt.gensalt())
+    hashed = bcrypt.hashpw(password, bcrypt.gensalt(log_rounds=2))
     return hashed
 
 
@@ -82,6 +80,3 @@ def get_user_data(num_of_users):
         users.append(User(get_username(), get_email(f_name, l_name), get_pass(), f_name, l_name, get_is_admin()))
     return users
 
-
-if __name__ == '__main__':
-    print(get_pass())
