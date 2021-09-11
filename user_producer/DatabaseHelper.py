@@ -1,72 +1,42 @@
+import json
 import traceback
 
+import jaydebeapi
 import mysql
 from mysql.connector import Error
+from mysql.connector import MySQLConnection
 
 
-# !!!!!!IMPORTANT!!!!!!! You must enter the path of a txt file on your local machine that contains the password
-# of the database, You must also enter accurate data for root, host, and database
-# This method connects to the data base
-def connect():
-    con_try = None
+def clear_table(table, clear_conn):
+    queries = []
+    if isinstance(clear_conn, MySQLConnection):
+        queries.append("SET SQL_SAFE_UPDATES = 0;")
+        queries.append("delete from {} where 1 = 1;".format(table))
+        queries.append("SET SQL_SAFE_UPDATES = 1;")
+        queries.append("ALTER TABLE {} AUTO_INCREMENT = 0;".format(table))
+    else:
+        h2_query = "DELETE FROM {};".format(table)
+        queries.append(h2_query)
     try:
-        con_try = mysql.connector.connect(user='root', password='root',  # Enter password here
-                                          host='localhost',
-                                          database='bytecrunchers')
-    except Error:
-        print("There was a problem connecting to the database, please make sure the database information is correct!")
-    if con_try.is_connected():
-        return con_try
-
-
-# This method clears the table of all data and resets the auto increment
-def clear_table(table):
-    query1 = "SET SQL_SAFE_UPDATES = 0;"
-    query2 = "delete from {} where 1 = 1;".format(table)
-    query3 = "SET SQL_SAFE_UPDATES = 1;"
-    query4 = "ALTER TABLE users AUTO_INCREMENT = 0;"
-    connection = connect()
-    curs = connection.cursor()
-    try:
-        curs.execute(query1)
-        curs.execute(query2)
-        curs.execute(query3)
-        curs.execute(query4)
+        clear_curs = clear_conn.cursor()
+        for q in queries:
+            clear_curs.execute(q)
     except Error:
         traceback.print_exc()
         print("There was a problem clearing the user table!")
-    connection.commit()
-    connection.close()
+    clear_conn.commit()
 
 
 # This returns the count of all rows in the table
-def count_rows(table):
-    conn = connect()
-    curs = conn.cursor()
-    query = "select count(*) from {}".format(table)
-    count = None
+def count_rows(table, count_conn):
+    count_curs = count_conn.cursor()
+    count_query = "select count(*) from {}".format(table)
+    row_count = None
     try:
-        curs.execute(query)
-        count = curs.fetchall()[0][0]
+        count_curs.execute(count_query)
+        row_count = count_curs.fetchall()[0][0]
     except Error:
         traceback.print_exc(
             print("There was a problem counting the rows")
         )
-    conn.close()
-    return count
-
-
-# This method adds a single user to the user table with hardcoded dummy data (for testing purposes)
-def add_test_user():
-    conn = connect()
-    curs = conn.cursor()
-    query = "insert into users(username, email, password, first_name, last_name, is_admin) values(%s, %s, %s, %s, " \
-            "%s, %s) "
-    values = ("Test user", "Test email", "Test pass", "Test fname", "Test lname", 1)
-    try:
-        curs.execute(query, values)
-    except Error:
-        traceback.print_exc()
-        print("There was a problem adding the single test user")
-    conn.commit()
-    conn.close()
+    return row_count
