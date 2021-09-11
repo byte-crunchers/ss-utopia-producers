@@ -34,11 +34,11 @@ def test_generate_clear(connect_h2):
     query = 'SELECT * FROM transactions'
     cur.execute(query)
     assert len(cur.fetchall()) == 0 #test clear
-    generate_transactions(500, connect_h2)
+    generate_transactions(200, connect_h2)
     query = 'SELECT * FROM transactions'
     cur.execute(query)
     results = cur.fetchall()
-    assert len(results) == 500
+    assert len(results) == 200
     assert results[9][3] #assert that the results (or at least #10) have a memo
 
 def test_generate_clear_cards(connect_h2):
@@ -47,14 +47,9 @@ def test_generate_clear_cards(connect_h2):
     query = 'SELECT * FROM card_transactions'
     cur.execute(query)
     assert len(cur.fetchall()) == 0 #test clear
-    generate_card_transactions(500, connect_h2)
+    generate_card_transactions(300, connect_h2)
     query = 'SELECT * FROM card_transactions'
     cur.execute(query)
     results = cur.fetchall()
-    assert len(results) == 500
+    assert len(results) == 300
     assert results[9][3] #assert that the results (or at least #10) have a memo
-
-
-
-if __name__ == "__main__":
-    unittest.main()

@@ -1,10 +1,19 @@
 import datetime
 import random
 import traceback
-import mysql
-from mysql.connector import Error
 import json
+import jaydebeapi
+from jaydebeapi import Error
 
+def connect():
+    con_try = None
+    try:
+        f = open('../dbkey.json', 'r')
+        key = json.load(f)        
+        con_try = jaydebeapi.connect(key["driver"], key["location"], key["login"], key["jar"] )
+    except Error:
+        print("There was a problem connecting to the database, please make sure the database information is correct!")
+    return con_try
 
 def luhn_checksum(card_number): #shamelessly copied from SO
     def digits_of(n):
@@ -57,48 +66,24 @@ def generate(num_rows, conn):
         return 1
     accounts = random.sample(accounts_all, num_rows) #gets a random sampling of accounts
                                                 
-    query = "INSERT INTO cards VALUES (%s,%s,%s,%s,%s,%s)"
+    query = "INSERT INTO cards VALUES (?,?,?,?,?,?)"
     cur = conn.cursor()
     for acc in accounts:
         card = Card(acc[0])
         card.build_number()
-        values = (card.account, card.num, card.pin, card.cvc1, card.cvc2, card.exp_date)
+        values = (card.account, card.num, card.pin, card.cvc1, card.cvc2, str(card.exp_date))
         try:
             cur.execute(query, values)
-        except mysql.connector.errors.IntegrityError:
+        except:
             # Find a unique card number that is not in the database
             while True:
                 try:
                     print("collision - a 1/1,000,000,000 chance")
                     card.build_number()
-                    values = (card.account, card.num, card.pin, card.cvc1, card.cvc2, card.exp_date)
+                    values = (card.account, card.num, card.pin, card.cvc1, card.cvc2, str(card.exp_date))
                     cur.execute(query, values)
                     break
-                except mysql.connector.errors.IntegrityError:
+                except:
                     print("new number fails. That's a 1/1,000,000,000,000,000,000 chance!")
                     continue
-        except Error:
-            print("There was a problem writing to the database. ")
-            traceback.print_exc()
     conn.commit()
-
-def connect():
-    con_try = None
-    try:
-        f = open('../dbkey.json', 'r')
-        key = json.load(f)
-        con_try = mysql.connector.connect(user=key["user"], password=key["password"], host=key["host"], database=key["database"])
-        
-    except Error:
-        print("There was a problem connecting to the database, please make sure the database information is correct!")
-    if con_try.is_connected():
-        return con_try
-    else:
-        print("There was a problem connecting to the database, please make sure the database information is correct!")
-        print(Error)
-
-if __name__ == '__main__':
-    conn = connect()
-    clear(conn)
-    generate(600, conn)
-    conn.close()

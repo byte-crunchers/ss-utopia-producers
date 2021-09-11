@@ -1,6 +1,6 @@
 {
-    "user":"root", 
-    "password":"***********",
-    "host":"localhost",
-    "database":"bytecrunchers"
+    "driver":"com.mysql.jdbc.Driver",
+    "location":"jdbc:MySQL://localhost/bytecrunchers",
+    "login": ["root", "pass"],
+    "jar":"C:/Program Files (x86)/MySQL/Connector J 8.0/mysql-connector-java-8.0.25.jar"
 }

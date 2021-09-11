@@ -2,16 +2,19 @@ import random
 import traceback
 import datetime
 from faker import Faker
-import sys
-from connection_helper import connect
 from jaydebeapi import Error
+import jaydebeapi
+import json
 
-#class Timer:
-#    def __init__(self, step):
-#        self.step = step
-#        self.intime = time.perf_counter()
-#    def end(self):
-#        print("{step} took {time:f} seconds".format(step=self.step, time=time.perf_counter() - self.intime))
+def connect():
+    con_try = None
+    try:
+        f = open('../dbkey.json', 'r')
+        key = json.load(f)        
+        con_try = jaydebeapi.connect(key["driver"], key["location"], key["login"], key["jar"] )
+    except Error:
+        print("There was a problem connecting to the database, please make sure the database information is correct!")
+    return con_try
 
 country_codes = ("US", "VI", "VN", "ZA", "TJ", "TH", "TD", "SY", "SO", "SJ", "RU", "PS", "NG", "MX", "KR", "KP", "JP", "GU", "MP", "CN", "CA", "AS")
 
@@ -60,11 +63,7 @@ def generate_transactions(num_rows, conn):
         accounts_sample = random.sample(accounts, 2) #use so that we can have two random, unique accounts
         trans = Transaction(fake, accounts_sample[0][0], accounts_sample[1][0])
         vals = (trans.origin_accounts_id, trans.destination_accounts_id, trans.memo, trans.transfer_value, trans.time_stamp.__str__())
-        try:
-            cur.execute(query, vals)
-        except Error:
-            print("There was a problem writing to the database.")
-            traceback.print_exc()
+        cur.execute(query, vals)
     conn.commit()
 
 def generate_card_transactions(num_rows, conn):
@@ -111,12 +110,12 @@ def clear_card_trans(conn):
     #doesn't commit until the generate function
     
 
-if __name__ == '__main__':
-    trans_num =  int(sys.argv[1])
-    card_num = int(sys.argv[2])
-    conn = connect()
-    clear_trans(conn)
-    generate_transactions(trans_num, conn)
-    clear_card_trans(conn)
-    generate_card_transactions(card_num, conn)
-    conn.close()
+#if __name__ == '__main__':
+#    trans_num =  int(sys.argv[1])
+#    card_num = int(sys.argv[2])
+#    conn = connect()
+#    clear_trans(conn)
+#    generate_transactions(trans_num, conn)
+#    clear_card_trans(conn)
+#    generate_card_transactions(card_num, conn)
+#    conn.close()
