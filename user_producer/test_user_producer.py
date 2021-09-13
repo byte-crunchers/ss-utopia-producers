@@ -1,12 +1,12 @@
 import json
 
-import pytest
-
 import jaydebeapi
+import pytest
+from jaydebeapi import Error
+
 from database_helper import clear_table, count_rows, execute_scripts_from_file
 from generate_user_data import get_user_data
 from user_producer import populate_users
-from jaydebeapi import Error
 
 table = "BYTECRUNCHERS.USERS"
 
@@ -32,9 +32,12 @@ def connect_h2():
 
 
 def test_drop_schema(connect_h2):
-    execute_scripts_from_file("C:/Users/meeha/OneDrive/Desktop/SmoothStack/ByteCrunchersSQL/H2DropUsers.sql", connect_h2)
-    execute_scripts_from_file("C:/Users/meeha/OneDrive/Desktop/SmoothStack/ByteCrunchersSQL/H2DropBranches.sql", connect_h2)
-    execute_scripts_from_file("C:/Users/meeha/OneDrive/Desktop/SmoothStack/ByteCrunchersSQL/H2DropSchema.sql", connect_h2)
+    execute_scripts_from_file("C:/Users/meeha/OneDrive/Desktop/SmoothStack/ByteCrunchersSQL/H2DropUsers.sql",
+                              connect_h2)
+    execute_scripts_from_file("C:/Users/meeha/OneDrive/Desktop/SmoothStack/ByteCrunchersSQL/H2DropBranches.sql",
+                              connect_h2)
+    execute_scripts_from_file("C:/Users/meeha/OneDrive/Desktop/SmoothStack/ByteCrunchersSQL/H2DropSchema.sql",
+                              connect_h2)
     assert connect_h2
     assert isinstance(connect_h2, jaydebeapi.Connection)
 
@@ -87,11 +90,11 @@ def test_large_h2(connect_h2):
 
 
 def test_stress_h2(connect_h2):
-    users_stress = get_user_data(10000)
+    users_stress = get_user_data(8000)
     clear_table(table, connect_h2)
     populate_users(users_stress, connect_h2, table)
     count_stress = count_rows(table, connect_h2)
-    assert (10000, count_stress)
+    assert (8000, count_stress)
     clear_table(table, connect_h2)
     count_stress = count_rows(table, connect_h2)
     assert (0, count_stress)

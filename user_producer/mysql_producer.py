@@ -3,6 +3,7 @@ import unittest
 
 from mysql.connector import MySQLConnection
 
+from generate_user_data import get_user_data
 from database_helper import clear_table
 from database_helper import count_rows
 from user_producer import *
