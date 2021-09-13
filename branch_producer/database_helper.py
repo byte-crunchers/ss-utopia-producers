@@ -58,6 +58,6 @@ def execute_scripts_from_file(filename, conn):
         # the DROP TABLE commands
         try:
             curs.execute(command)
-        except (jaydebeapi.OperationalError, jaydebeapi.DatabaseError):
+        except (jaydebeapi.OperationalError, jaydebeapi.DatabaseError, Exception):
             traceback.print_exc()
     conn.commit()
