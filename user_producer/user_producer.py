@@ -4,9 +4,8 @@ import jaydebeapi
 import mysql
 from mysql.connector import Error
 
-from DatabaseHelper import count_rows
-from GenerateUserData import generate_username, get_user_data
-from GenerateUserData import get_email
+from generate_user_data import generate_username
+from generate_user_data import get_email
 
 
 def populate_users(user_data, pop_conn, pop_table):
@@ -38,4 +37,3 @@ def populate_users(user_data, pop_conn, pop_table):
     print("\n{} duplicate usernames or emails were generated and replaced!".format(duplicate_count))
     print("{} double duplicate usernames or emails were generated and replaced!".format(dd_count))
     pop_conn.commit()
-
