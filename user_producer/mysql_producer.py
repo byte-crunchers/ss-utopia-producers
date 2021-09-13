@@ -77,8 +77,8 @@ class TestClass(unittest.TestCase):
         users_list2 = get_user_data(1000)  # Generate new list of 1000 dummy users
         populate_users(users_list2, conn_large, table)
         self.assertEqual(count_rows(table, conn_large), 1100)  # Test that the new list was added
-        clear_table(table, conn_large)  # Clear the table
-        self.assertEqual(count_rows(table, conn_large), 0)  # Test that table is empty
+        # clear_table(table, conn_large)  # Clear the table
+        # self.assertEqual(count_rows(table, conn_large), 0)  # Test that table is empty
         conn_large.close()
 
     # This method tests duplicate username or email
