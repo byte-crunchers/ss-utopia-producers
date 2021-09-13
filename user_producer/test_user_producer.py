@@ -3,12 +3,13 @@ import json
 import jaydebeapi
 import pytest
 from jaydebeapi import Error
-
+import os
 from database_helper import clear_table, count_rows, execute_scripts_from_file
 from generate_user_data import get_user_data
 from user_producer import populate_users
 
 table = "BYTECRUNCHERS.USERS"
+script_dir = os.path.dirname(__file__)
 
 
 @pytest.fixture(scope="module", autouse=True)
@@ -32,25 +33,20 @@ def connect_h2():
 
 
 def test_drop_schema(connect_h2):
-    execute_scripts_from_file("C:/Users/meeha/OneDrive/Desktop/SmoothStack/ByteCrunchersSQL/H2DropUsers.sql",
-                              connect_h2)
-    execute_scripts_from_file("C:/Users/meeha/OneDrive/Desktop/SmoothStack/ByteCrunchersSQL/H2DropBranches.sql",
-                              connect_h2)
-    execute_scripts_from_file("C:/Users/meeha/OneDrive/Desktop/SmoothStack/ByteCrunchersSQL/H2DropSchema.sql",
-                              connect_h2)
+    execute_scripts_from_file(os.path.join(script_dir, "SQL/H2DropUsers.sql"), connect_h2)
+    execute_scripts_from_file(os.path.join(script_dir, "SQL/H2DropBranches.sql"), connect_h2)
+    execute_scripts_from_file(os.path.join(script_dir, "SQL/H2DropSchema.sql"), connect_h2)
     assert connect_h2
     assert isinstance(connect_h2, jaydebeapi.Connection)
 
 
 def test_create_schema(connect_h2):
-    execute_scripts_from_file("C:/Users/meeha/OneDrive/Desktop/SmoothStack/ByteCrunchersSQL/H2CreateSchema.sql",
+    execute_scripts_from_file(os.path.join(script_dir, "SQL/H2CreateSchema.sql"),
                               connect_h2)
-    execute_scripts_from_file("C:/Users/meeha/OneDrive/Desktop/SmoothStack/ByteCrunchersSQL/H2CreateUsers.sql",
+    execute_scripts_from_file(os.path.join(script_dir, "SQL/H2CreateUsers.sql"),
                               connect_h2)
-    execute_scripts_from_file("C:/Users/meeha/OneDrive/Desktop/SmoothStack/ByteCrunchersSQL/H2CreateBranches.sql",
+    execute_scripts_from_file(os.path.join(script_dir, "SQL/H2CreateBranches.sql"),
                               connect_h2)
-    assert connect_h2
-    assert isinstance(connect_h2, jaydebeapi.Connection)
 
 
 # This method tests
