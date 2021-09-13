@@ -4,9 +4,9 @@ import jaydebeapi
 import mysql
 from mysql.connector import Error
 
-from DatabaseHelper import count_rows
-from GenerateUserData import generate_username, get_user_data
-from GenerateUserData import get_email
+from database_helper import count_rows
+from generate_user_data import generate_username, get_user_data
+from generate_user_data import get_email
 
 
 def populate_users(user_data, pop_conn, pop_table):

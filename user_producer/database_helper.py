@@ -1,8 +1,6 @@
-import json
 import traceback
 
 import jaydebeapi
-import mysql
 from mysql.connector import Error
 from mysql.connector import MySQLConnection
 
@@ -40,3 +38,26 @@ def count_rows(table, count_conn):
             print("There was a problem counting the rows")
         )
     return row_count
+
+
+def execute_scripts_from_file(filename, conn):
+    # Open and read the file as a single buffer
+    try:
+        fd = open(filename, 'r')
+        sql_file = fd.read()
+        fd.close()
+    except IOError:
+        traceback.print_exc()
+    # all SQL commands (split on ';')
+    sql_commands = sql_file.split(';')
+    # Execute every command from the input file
+    curs = conn.cursor()
+    for command in sql_commands:
+        # This will skip and report errors
+        # For example, if the tables do not yet exist, this will skip over
+        # the DROP TABLE commands
+        try:
+            curs.execute(command)
+        except (jaydebeapi.OperationalError, jaydebeapi.DatabaseError, Exception):
+            traceback.print_exc()
+    conn.commit()

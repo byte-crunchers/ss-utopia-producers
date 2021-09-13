@@ -52,7 +52,7 @@ def get_pass():
     possible_characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!#$%&'" \
                           "()*+,-./:;<=>?@[\]^_`{|}~"
     password = "".join([random.choice(possible_characters) for i in range(password_length)])
-    hashed = bcrypt.hashpw(password, bcrypt.gensalt(log_rounds=2))
+    hashed = bcrypt.hashpw(password, bcrypt.gensalt(log_rounds=1))
     return hashed
 
 

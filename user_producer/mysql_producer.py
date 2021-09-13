@@ -3,9 +3,9 @@ import unittest
 
 from mysql.connector import MySQLConnection
 
-from DatabaseHelper import clear_table
-from DatabaseHelper import count_rows
-from UserProducer import *
+from database_helper import clear_table
+from database_helper import count_rows
+from user_producer import *
 
 table = "users"
 
@@ -31,7 +31,7 @@ def connect_mysql():
 # This class Tests the user_producer and related helper functions
 class TestClass(unittest.TestCase):
 
-    # This method tests the connect method from DatabaseHelper.py
+    # This method tests the connect method from database_helper.py
     def test_connect(self):
         conn1 = connect_mysql()
         self.assertIsNotNone(conn1)  # Test that connection is not null
@@ -39,7 +39,7 @@ class TestClass(unittest.TestCase):
         conn1.close()
         self.assertEqual(conn1.is_connected(), False)  # Test that connection is closed
 
-    # This method tests the count, clear and add test user methods from DatabaseHelper.py
+    # This method tests the count, clear and add test user methods from database_helper.py
     def test_count_clear(self):
         conn_count_clear = connect_mysql()
         clear_table(table, conn_count_clear)  # Clear the table
@@ -81,7 +81,7 @@ class TestClass(unittest.TestCase):
         conn_large.close()
 
     # This method tests duplicate username or email
-    # exception handling by adding a large number of rows (may take a minute)
+    # exception handling by adding a large number of rows (may take some time)
     def test_user_producer_stress(self):
         conn_stress = connect_mysql()
         populate_users(get_user_data(10000), conn_stress, table)  # Add 10,000 users to the database
