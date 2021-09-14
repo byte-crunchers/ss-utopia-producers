@@ -36,6 +36,12 @@ def test_generate_clear(connect_h2):
     cur.execute(query)
     assert len(cur.fetchall()) == 0 #test clear
     #force a card_num collision, a 1/1,000,000,000 chance
+    
+    query = "INSERT INTO accounts VALUES (1, 116, 'Savings', 944.97, 0, null, null)"
+    try:
+        cur.execute(query)
+    except:
+        pass #basically  insert  if not exists, so we don't care about the except
     card = Card(1) #with this seed, account 1 has no card. Therefor SQL will not reject it
     card.num = 2319231456914939 #gurenteed to be created with this seed
     query = "INSERT INTO cards VALUES (?,?,?,?,?,?)"

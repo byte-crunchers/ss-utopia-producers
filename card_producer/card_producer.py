@@ -40,7 +40,7 @@ class Card:
             self.exp_date = datetime.date.today() + datetime.timedelta(days = random.randrange(-5,1000))
 
     def build_number(self):
-        left15 = '231923' + str(random.randint(0, 999999999))
+        left15 = '431923' + str(random.randint(0, 999999999))
                 #bank id number is from Ezekiel 23:19 and Song of Soloman 2:3
                 #which also works because first digit, '2', is for "airlines, financial, and other future industry assignments"
         checksum = luhn_checksum(left15)

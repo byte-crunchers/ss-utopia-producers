@@ -22,7 +22,7 @@ class Transaction:
     def __init__(self, fake, account_a, account_b,):
         self.origin_accounts_id = account_a
         self.destination_accounts_id = account_b
-        self.memo = fake.text(255)
+        self.memo = fake.text(55)
         self.transfer_value = random.random()*2000.00
         self.time_stamp = datetime.datetime.now()
 
@@ -30,7 +30,7 @@ class Card_Transaction:
     def __init__(self, fake, card_num, account, pin=None,cvc1=None,cvc2=None):
         self.card_num = card_num
         self.merchant_account_id = account
-        self.memo = fake.text(255)
+        self.memo = fake.text(55)
         self.transfer_value = random.random()*2000.00
         self.pin = pin
         self.cvc1 = cvc1
