@@ -87,11 +87,11 @@ def test_large(connect_h2):
 
 
 def test_stress(connect_h2):
-    branches_stress = generate_branches(50000)
+    branches_stress = generate_branches(500000)
     clear_table(table, connect_h2)
     populate_branches(branches_stress, connect_h2, table)
     count_stress = count_rows(table, connect_h2)
-    assert (50000, count_stress)
+    assert (500000, count_stress)
     clear_table(table, connect_h2)
     count_stress = count_rows(table, connect_h2)
     assert (0, count_stress)

@@ -1,12 +1,17 @@
-import json
+import random
 import traceback
 
-from faker import Faker
 import jaydebeapi
 import mysql
+from faker import Faker
 from mysql.connector import Error
+from pyzipcode import ZipCodeDatabase
 
 fake = Faker()
+zip_database = ZipCodeDatabase()
+valid_zips = []
+for x in zip_database:
+    valid_zips.append(x)
 
 
 class Branch:
@@ -15,7 +20,10 @@ class Branch:
 
 
 def get_address():
-    return fake.address()
+    choice = random.choice(valid_zips)
+    zip_code = zip_database[choice]
+    state = zip_code.state
+    return fake.building_number() + " " + fake.street_name() + ",\n" + fake.city() + ", " + state + " " + choice
 
 
 def generate_branches(num_of_branches):
@@ -50,3 +58,7 @@ def populate_branches(branch_data, pop_conn, pop_table):
     print("\n{} duplicate addresses were generated and replaced!".format(duplicate_count))
     print("{} double duplicate addresses were generated and replaced!".format(dd_count))
     pop_conn.commit()
+
+
+if __name__ == '__main__':
+    get_address()
