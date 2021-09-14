@@ -28,7 +28,7 @@ def get_address():
 
 def generate_branches(num_of_branches):
     branches = []
-    for x in range(num_of_branches):
+    for _ in range(num_of_branches):
         location = get_address()
         branches.append(Branch(location))
     return branches
