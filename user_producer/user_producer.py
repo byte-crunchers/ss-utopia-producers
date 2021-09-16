@@ -13,8 +13,8 @@ def populate_users(user_data, pop_conn, pop_table):
     dd_count = 0
     curs = pop_conn.cursor()
     for user in user_data:
-        query = "INSERT INTO {}(username, email, password, first_name, last_name, is_admin) VALUES('{}', '{}', '{}', " \
-                "'{}', '{}', {}) ".format(pop_table, user.user, user.email, user.password, user.f_name, user.l_name,
+        query = "INSERT INTO {}(username, email, password, first_name, last_name, is_admin, active) VALUES('{}', '{}', '{}', " \
+                "'{}', '{}', {}, {}) ".format(pop_table, user.user, user.email, user.password, user.f_name, user.l_name,
                                           user.is_admin)
         try:
             curs.execute(query)
@@ -23,8 +23,8 @@ def populate_users(user_data, pop_conn, pop_table):
             # Find a unique username and email that is not in the database
             while True:
                 try:
-                    query = "INSERT INTO {}(username, email, password, first_name, last_name, is_admin) VALUES('{}', " \
-                            "'{}', '{}', '{}', '{}', {}) ".format(pop_table, generate_username()[0], get_email(
+                    query = "INSERT INTO {}(username, email, password, first_name, last_name, is_admin, active) VALUES('{}', " \
+                            "'{}', '{}', '{}', '{}', {}, {}) ".format(pop_table, generate_username()[0], get_email(
                         user.f_name, user.l_name), user.password, user.f_name, user.l_name, user.is_admin)
                     curs.execute(query)
                     break
