@@ -3,6 +3,7 @@ import traceback
 import json
 import datetime
 import jaydebeapi
+import os
 from jaydebeapi import Error
 
 def connect(path):
@@ -69,7 +70,7 @@ def generate(num_rows, conn):
         return 1
     users = random.sample(users_all, num_rows//2+1) #gets a random sampling of users
                                                 #//2 means the average user will have two accounts 
-    query = 'INSERT INTO accounts(users_id, account_type, balance, payment_due, due_date, accounts.limit, debt_interest, active) VALUES (?,?,?,?,?,?,?,?)'
+    query = 'INSERT INTO accounts(users_id, account_type, balance, payment_due, due_date, credit_limit, debt_interest, active) VALUES (?,?,?,?,?,?,?,?)'
     acc_types = get_account_types(conn)
     cur = conn.cursor()
     for i in range (num_rows):

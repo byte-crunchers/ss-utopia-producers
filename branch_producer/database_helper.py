@@ -22,7 +22,6 @@ def clear_table(table, clear_conn):
     except Error:
         traceback.print_exc()
         print("There was a problem clearing the user table!")
-    clear_conn.commit()
 
 
 # This returns the count of all rows in the table
@@ -60,4 +59,3 @@ def execute_scripts_from_file(filename, conn):
             curs.execute(command)
         except (jaydebeapi.OperationalError, jaydebeapi.DatabaseError, Exception):
             traceback.print_exc()
-    conn.commit()

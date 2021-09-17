@@ -57,7 +57,6 @@ def populate_branches(branch_data, pop_conn, pop_table):
             traceback.print_exc()
     print("\n{} duplicate addresses were generated and replaced!".format(duplicate_count))
     print("{} double duplicate addresses were generated and replaced!".format(dd_count))
-    pop_conn.commit()
 
 
 if __name__ == '__main__':

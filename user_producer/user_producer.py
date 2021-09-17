@@ -8,27 +8,26 @@ from generate_user_data import generate_username
 from generate_user_data import get_email
 
 
-def populate_users(user_data, pop_conn, pop_table):
+def populate_users(user_data, pop_conn):
     duplicate_count = 0
     dd_count = 0
     curs = pop_conn.cursor()
     for user in user_data:
-        query = "INSERT INTO {}(username, email, password, first_name, last_name, is_admin, active) VALUES('{}', '{}', '{}', " \
-                "'{}', '{}', {}, {}) ".format(pop_table, user.user, user.email, user.password, user.f_name, user.l_name,
-                                          user.is_admin)
+        query = "INSERT INTO users(username, email, password, first_name, last_name, is_admin, active) VALUES(?, ?, ?, ?, ?, ?, ?)"
+        vals = (generate_username()[0], get_email(user.f_name, user.l_name), user.password, user.f_name, user.l_name, user.is_admin, user.active)
         try:
-            curs.execute(query)
-        except (mysql.connector.errors.IntegrityError, jaydebeapi.DatabaseError):  # Check for Duplicates
+            curs.execute(query, vals)
+        except (jaydebeapi.DatabaseError):  # Check for Duplicates
+            traceback.print_exc()
             duplicate_count += 1
             # Find a unique username and email that is not in the database
             while True:
                 try:
-                    query = "INSERT INTO {}(username, email, password, first_name, last_name, is_admin, active) VALUES('{}', " \
-                            "'{}', '{}', '{}', '{}', {}, {}) ".format(pop_table, generate_username()[0], get_email(
-                        user.f_name, user.l_name), user.password, user.f_name, user.l_name, user.is_admin)
-                    curs.execute(query)
+                    query = "INSERT INTO users(username, email, password, first_name, last_name, is_admin, active) VALUES(?, ?, ?, ?, ?, ?, ?) "
+                    vals = (generate_username()[0], get_email(user.f_name, user.l_name), user.password, user.f_name, user.l_name, user.is_admin, user.active)
+                    curs.execute(query, vals)
                     break
-                except (mysql.connector.errors.IntegrityError, jaydebeapi.DatabaseError):
+                except (jaydebeapi.DatabaseError):
                     dd_count += 1
                     continue
         except Error:
@@ -36,4 +35,3 @@ def populate_users(user_data, pop_conn, pop_table):
             traceback.print_exc()
     print("\n{} duplicate usernames or emails were generated and replaced!".format(duplicate_count))
     print("{} double duplicate usernames or emails were generated and replaced!".format(dd_count))
-    pop_conn.commit()

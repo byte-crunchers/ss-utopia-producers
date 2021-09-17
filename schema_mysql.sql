@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS `bytecrunchers`.`accounts` (
   `balance` DECIMAL(10,2) NOT NULL,
   `payment_due` DECIMAL(10,2) NOT NULL,
   `due_date` DATE NULL,
-  `limit` INT NULL,
+  `credit_limit` INT NULL,
   `debt_interest` DECIMAL(5,5) UNSIGNED NOT NULL,
   `active` TINYINT NOT NULL,
   PRIMARY KEY (`id`),
