@@ -142,8 +142,9 @@ DROP TABLE IF EXISTS `bytecrunchers`.`loan_types` ;
 
 CREATE TABLE IF NOT EXISTS `bytecrunchers`.`loan_types` (
   `id` VARCHAR(45) NOT NULL,
-  `upper_range` DECIMAL(4,4) NOT NULL,
-  `lower_range` DECIMAL(4,4) NOT NULL,
+  `upper_range` DECIMAL(4,4) UNSIGNED NOT NULL,
+  `lower_range` DECIMAL(4,4) UNSIGNED NOT NULL,
+  `late_fee` DECIMAL(6,2) UNSIGNED NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `loan_type_id_UNIQUE` (`id` ASC) VISIBLE)
 ENGINE = InnoDB;
@@ -162,6 +163,7 @@ CREATE TABLE IF NOT EXISTS `bytecrunchers`.`loans` (
   `due_date` DATETIME NOT NULL,
   `payment_due` DECIMAL(8,2) UNSIGNED NOT NULL,
   `loan_type` VARCHAR(45) NOT NULL,
+  `monthly_payment` DECIMAL(7,2) UNSIGNED NOT NULL,
   `active` TINYINT NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `loans_id_UNIQUE` (`id` ASC) VISIBLE,

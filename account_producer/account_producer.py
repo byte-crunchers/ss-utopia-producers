@@ -11,6 +11,7 @@ def connect(path):
         f = open(path, 'r')
         key = json.load(f)        
         con_try = jaydebeapi.connect(key["driver"], key["location"], key["login"], key["jar"] )
+        con_try.jconn.setAutoCommit(False)
     except Error:
         print("There was a problem connecting to the database, please make sure the database information is correct!")
     return con_try
@@ -47,6 +48,7 @@ def create_account(user, account_type): #takes user account number, returns acco
     if (account_type == "Checking" or account_type == "Savings"): #non-loan accounts
         account.balance = random.uniform(0, 4206.9)
         account.payment_due = 0
+        account.interest = 0
     else:
         account.limit = random.uniform(-4206.9, 0)
         account.balance = random.uniform(account.limit, 0)
@@ -67,7 +69,7 @@ def generate(num_rows, conn):
         return 1
     users = random.sample(users_all, num_rows//2+1) #gets a random sampling of users
                                                 #//2 means the average user will have two accounts 
-    query = 'INSERT INTO accounts(users_id, account_type, balance, payment_due, due_date, limit, debt_interest, active) VALUES (?,?,?,?,?,?,?,?)'
+    query = 'INSERT INTO accounts(users_id, account_type, balance, payment_due, due_date, accounts.limit, debt_interest, active) VALUES (?,?,?,?,?,?,?,?)'
     acc_types = get_account_types(conn)
     cur = conn.cursor()
     for i in range (num_rows):

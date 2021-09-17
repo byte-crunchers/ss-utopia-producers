@@ -64,7 +64,6 @@ def generate_transactions(num_rows, conn):
         trans = Transaction(fake, accounts_sample[0][0], accounts_sample[1][0])
         vals = (trans.origin_accounts_id, trans.destination_accounts_id, trans.memo, trans.transfer_value, trans.time_stamp.__str__())
         cur.execute(query, vals)
-    conn.commit()
 
 def generate_card_transactions(num_rows, conn):
     accounts = get_accounts(conn)
@@ -91,7 +90,6 @@ def generate_card_transactions(num_rows, conn):
         except Error:
             print("There was a problem writing to the database. ")
             traceback.print_exc()
-    conn.commit()
 
 
     

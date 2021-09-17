@@ -42,7 +42,7 @@ if __name__ == "__main__":
             break
         cur.execute(line)
     
-    users_list = generate_ud.get_user_data(10)
+    users_list = generate_ud.get_user_data(60)
     populate_users(users_list, conn)
 
     cur.execute("INSERT INTO account_types VALUES \
@@ -54,7 +54,22 @@ if __name__ == "__main__":
 ('Plus Credit',0.00000, 0.00, 0.0000, 0.0100, 29.00),\
 ('Savings', 0.00500, 0.00, 0.0000, 0.0000, 0.00);")
 
+    cur.execute("INSERT INTO loan_types VALUES \
+    ('Morgage', 0.04, 0.004, 300),\
+    ('Auto', 0.05, 0.00499, 70),\
+    ('Student', 0.03, 0.0035, 200);")
 
-    ap.generate(1, conn)
+    ap.generate(100, conn)
+
+    cp.generate(70, conn)
+
+    tp.generate_transactions(200, conn)
+    tp.generate_card_transactions(400, conn)
+
+    lp.generate_loans(20, conn)
+
+    lpp.generate(80, conn)
+
+    conn.commit()
 
 

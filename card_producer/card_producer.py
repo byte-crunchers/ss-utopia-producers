@@ -86,4 +86,3 @@ def generate(num_rows, conn):
                 except:
                     print("new number fails. That's a 1/1,000,000,000,000,000,000 chance!")
                     continue
-    conn.commit()
