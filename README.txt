@@ -16,3 +16,5 @@ coverage xml
 ```
 This will generage a coverage.xml file.
 
+##YOU MUST set the H2 environment variable to the h2 jar
+
