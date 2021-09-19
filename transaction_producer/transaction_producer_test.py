@@ -8,6 +8,7 @@ import time
 def connect_h2():
     con = jaydebeapi.connect("org.h2.Driver", "jdbc:h2:tcp://localhost/~/test;MODE=MySQL", ["sa", ""], "E:/Program Files (x86)/H2/bin/h2-1.4.200.jar" )
     con.cursor().execute("set schema bytecrunchers")
+    con.jconn.setAutoCommit(False)
     return con
 
 
@@ -17,7 +18,7 @@ def test_get_accounts(connect_h2):
     assert accounts
     assert len(accounts) > 40
     assert accounts[5][0] #tests the fifth returned account to make sure its id is not 0
-
+    connect_h2.rollback()
 
 def test_get_cards(connect_h2):
     cards = get_cards(connect_h2)
@@ -40,6 +41,7 @@ def test_generate_clear(connect_h2):
     results = cur.fetchall()
     assert len(results) == 200
     assert results[9][3] #assert that the results (or at least #10) have a memo
+    connect_h2.rollback()
 
 def test_generate_clear_cards(connect_h2):
     clear_card_trans(connect_h2)
@@ -53,3 +55,4 @@ def test_generate_clear_cards(connect_h2):
     results = cur.fetchall()
     assert len(results) == 300
     assert results[9][3] #assert that the results (or at least #10) have a memo
+    connect_h2.rollback()

@@ -35,10 +35,8 @@ def generate(num_rows, conn):
         pmnt = Payment(random.choice(loans)[0], random.choice(accounts)[0])
         vals = (pmnt.loan_id, pmnt.account_id, pmnt.amount, pmnt.time_stamp.__str__())
         cur.execute(query, vals)
-    conn.commit()
 
 def clear(conn):
     cur = conn.cursor()
     query = 'DELETE FROM loan_payments'
     cur.execute(query)
-    #doesn't commit until the generate function

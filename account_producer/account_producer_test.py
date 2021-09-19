@@ -1,11 +1,13 @@
 import pytest
+import os
 from account_producer import *
 
 
 @pytest.fixture(scope="module", autouse=True)
 def connect_h2():
-    con = jaydebeapi.connect("org.h2.Driver", "jdbc:h2:tcp://localhost/~/test;MODE=MySQL", ["sa", ""], "E:/Program Files (x86)/H2/bin/h2-1.4.200.jar" )
+    con = jaydebeapi.connect("org.h2.Driver", "jdbc:h2:tcp://localhost/~/test;MODE=MySQL", ["sa", ""], os.environ.get("H2") )
     con.cursor().execute("set schema bytecrunchers")
+    con.jconn.setAutoCommit(False)
     return con
 
 def test_get_users(connect_h2):
@@ -15,6 +17,7 @@ def test_get_users(connect_h2):
     assert users
     assert len(users) > 10
     assert users[5][0] #tests the fifth returned user to make sure their id is not 0
+    conn.rollback()
 
 def test_get_account_types(connect_h2):
     #this test will fail if there are no account types :<
@@ -23,7 +26,8 @@ def test_get_account_types(connect_h2):
     assert types
     assert len(types) > 5
     assert types[5][0] #tests the fifth returned type to make sure its id is not nuull
-    
+    conn.rollback()
+
 def test_create_account():
     #credit and non-credit accounts have different creation logic, so I must test both
     account_credit = create_account(0, "Test Credit Type")
@@ -46,3 +50,4 @@ def test_generate_clear(connect_h2):
     results = cur.fetchall()
     assert len(results) == 100
     assert results[9][2] #assert that the results (or at least #10) have account type
+    conn.rollback()

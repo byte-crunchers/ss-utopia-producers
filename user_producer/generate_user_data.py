@@ -8,13 +8,14 @@ fake = Faker()
 
 
 class User:
-    def __init__(self, user, email, password, f_name, l_name, is_admin):
+    def __init__(self, user, email, password, f_name, l_name, is_admin, active):
         self.user = user
         self.email = email
         self.password = password
         self.f_name = f_name
         self.l_name = l_name
         self.is_admin = is_admin
+        self.active = active
 
 
 def get_username():
@@ -52,7 +53,7 @@ def get_pass():
     possible_characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!#$%&'" \
                           "()*+,-./:;<=>?@[\]^_`{|}~"
     password = "".join([random.choice(possible_characters) for i in range(password_length)])
-    hashed = bcrypt.hashpw(password, bcrypt.gensalt(log_rounds=1))
+    hashed = bcrypt.hashpw(password.encode('utf8'), bcrypt.gensalt(10))
     return hashed
 
 
@@ -71,12 +72,16 @@ def get_is_admin():
     else:
         return True
 
+def get_active():
+    if random.random() < 0.1:
+        return False
+    return True
 
 def get_user_data(num_of_users):
     users = []
     for x in range(num_of_users):
         f_name = get_fname()
         l_name = get_lname()
-        users.append(User(get_username(), get_email(f_name, l_name), get_pass(), f_name, l_name, get_is_admin()))
+        users.append(User(get_username(), get_email(f_name, l_name), get_pass(), f_name, l_name, get_is_admin(), get_active()))
     return users
 
