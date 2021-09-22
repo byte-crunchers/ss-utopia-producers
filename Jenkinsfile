@@ -7,6 +7,39 @@ pipeline {
           git branch: 'feature_jenkins', credentialsId: 'git_login', url: 'https://github.com/byte-crunchers/ss-utopia-producers.git'
         }
       }
+      stage('prep python') {
+        steps{
+          sh '''pip install JayDeBeApi
+                pip install mysql
+                pip install Faker
+                pip install bcrypt
+                pip install coverage
+                pip install -U pytest
+                pip install random-username
+                pip install mysql-connector-python
+                pip install numpy
+                pip install pyzipcode
+                '''
+        
+        }
+      }
+      stage('start h2 server') {
+        steps{
+          
+        }
+      }
+      stage('run account test')
+      {
+        steps{
+
+        }
+      }
+      stage('run branch test')
+      {
+        steps{
+          
+        }
+      }
         
         stage("SonarQube analysis") {
             agent any
