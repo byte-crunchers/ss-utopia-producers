@@ -9,7 +9,7 @@ import json
 def connect():
     con_try = None
     try:
-        f = open('../dbkey.json', 'r')
+        f = open('dbkey.json', 'r')
         key = json.load(f)        
         con_try = jaydebeapi.connect(key["driver"], key["location"], key["login"], key["jar"] )
     except Error:
