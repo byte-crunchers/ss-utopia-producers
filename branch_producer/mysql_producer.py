@@ -27,6 +27,6 @@ if __name__ == '__main__':
     connect_mysql()
     conn = connect_mysql()
     conn_small = conn
-    branches_small = generate_branches(10)
-    populate_branches(branches_small, conn, "branches")
+    branches_small = generate_branches(1)
+    populate_branches(branches_small, conn)
     conn_small.close()

@@ -4,7 +4,7 @@ import traceback
 import jaydebeapi
 import mysql
 from faker import Faker
-from mysql.connector import Error
+from jaydebeapi import Error
 from pyzipcode import ZipCodeDatabase
 
 fake = Faker()
@@ -12,7 +12,6 @@ zip_database = ZipCodeDatabase()
 valid_zips = []
 for x in zip_database:
     valid_zips.append(x)
-choice = random.choice(valid_zips)
 
 
 class Branch:
@@ -21,42 +20,45 @@ class Branch:
         self.city = city
         self.state = state
         self.zip = zip
+
     def print_branch(self):
         print(self.street_address, self.city, self.state, self.zip)
 
 
 def get_street_address():
-    return fake.building_number() + " " + fake.street_name() + "\n"
+    return str(fake.building_number() + " " + fake.street_name() + "\n")
 
 
 def get_city():
-    return fake.city()
+    return str(fake.city())
 
 
 def get_zip_and_state():
+    choice = random.choice(valid_zips)
     zip_code = zip_database[choice]
     state = zip_code.state
-    return zip_code.zip, state
+    return str(choice), str(state)
 
 
 def generate_branches(num_of_branches):
-    branches = []
+    ret_branches = []
     for _ in range(0, num_of_branches):
         state = get_zip_and_state()[1]
-        zip = get_zip_and_state()[0]
-        branches.append(Branch(get_street_address(), get_city(), state, zip))
-    return branches
+        zip_code = get_zip_and_state()[0]
+        ret_branches.append(Branch(get_street_address(), get_city(), state, zip_code))
+    return ret_branches
 
 
 def populate_branches(branch_data, pop_conn):
     duplicate_count = 0
     dd_count = 0
     curs = pop_conn.cursor()
-    query = "INSERT INTO branches (street_address, city, state, zip) VALUES (?, ?, ?, ?)"
     for branch in branch_data:
         try:
+            query = "INSERT INTO branches(street_address, city, state, zip) VALUES(?, ?, ?, ?)"
             vals = (branch.street_address, branch.city, branch.state, branch.zip)
-            curs.execute(query)
+            print(branch.street_address, branch.city, branch.state, branch.zip)
+            curs.execute(query, vals)
         except (mysql.connector.errors.IntegrityError, jaydebeapi.DatabaseError):  # Check for Duplicates
             duplicate_count += 1
             while True:
@@ -73,7 +75,3 @@ def populate_branches(branch_data, pop_conn):
     print("{} double duplicate addresses were generated and replaced!".format(dd_count))
 
 
-if __name__ == '__main__':
-    branches = generate_branches(10)
-    for b in branches:
-        b.print_branch()
