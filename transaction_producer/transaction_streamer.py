@@ -9,7 +9,7 @@ def loopers(accounts: tuple, fake: Faker, kin ) -> None:
     accounts_sample = random.sample(accounts, 2) #use so that we can have two random, unique accounts
     trans = tp.Transaction(fake, accounts_sample[0][0], accounts_sample[1][0])
     resp = kin.put_record(StreamName='byte-henry', Data=json.dumps(trans.__dict__, default=str), PartitionKey='trans key')
-    print (resp)
+    #print (resp)
 
 def stream(interval: float = 5, chance: float = 1) -> None:
     accounts = tp.get_accounts(tp.connect())
@@ -26,5 +26,5 @@ def stream(interval: float = 5, chance: float = 1) -> None:
         time.sleep(interval)
 
 if __name__ == "__main__":
-    stream()
+    stream(0.5, 0.25)
     
