@@ -4,8 +4,7 @@ import jaydebeapi
 import pytest
 from jaydebeapi import Error
 
-from database_helper import execute_scripts_from_file, clear_table, count_rows
-from branch_producer import generate_branches, populate_branches
+from branch_producer import generate_branches, populate_branches, clear_table, count_rows, execute_scripts_from_file
 
 table = "branches"
 script_dir = os.path.dirname(__file__)
@@ -15,6 +14,7 @@ schema_path = os.path.join(script_dir, "../schema_h2.sql")
 # This method connects to a h2 database
 @pytest.fixture(scope="module", autouse=True)
 def connect_h2():
+    con_try = None
     try:
         con_try = jaydebeapi.connect("org.h2.Driver", "jdbc:h2:tcp://localhost/~/test;MODE=MySQL;database_to_upper"
                                                       "=false;", ["sa", ""], os.environ.get("H2"))

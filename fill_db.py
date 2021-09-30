@@ -9,7 +9,7 @@ import card_producer.card_producer as cp
 import transaction_producer.transaction_producer as tp
 import loan_producer.loan_producer as lp
 import loan_payment_producer.loan_payment_producer as lpp
-import branch_producer.branch_producer_monolith as bp
+import branch_producer.branch_producer as bp
 
 def connect_h2():
     con = jaydebeapi.connect("org.h2.Driver", "jdbc:h2:tcp://localhost/~/test;MODE=MySQL", ["sa", ""], os.environ.get("H2") )

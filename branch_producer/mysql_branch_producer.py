@@ -4,8 +4,7 @@ import traceback
 import jaydebeapi
 from mysql.connector import Error
 
-from branch_producer import generate_branches
-from branch_producer import populate_branches
+from branch_producer import generate_branches, populate_branches
 
 # Environment Variables
 mysql_pass = os.environ.get("MYSQL_PASS")
