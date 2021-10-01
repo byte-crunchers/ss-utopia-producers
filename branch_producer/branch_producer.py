@@ -75,9 +75,9 @@ def populate_branches(branch_data, pop_conn):
     print("{} double duplicate addresses were generated and replaced!".format(dd_count))
 
 
-def clear_table(table, clear_conn):
+def clear_table(clear_conn):
     queries = []
-    h2_query = "DELETE FROM {};".format(table)
+    h2_query = "DELETE FROM branches;"
     queries.append(h2_query)
     try:
         clear_curs = clear_conn.cursor()
@@ -123,4 +123,4 @@ def execute_scripts_from_file(filename, conn):
         try:
             curs.execute(command)
         except (jaydebeapi.OperationalError, jaydebeapi.DatabaseError, Exception):
-            traceback.print_exc()
+            print("\nCould not execute: " + command + "\n")

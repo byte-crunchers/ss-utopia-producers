@@ -36,11 +36,11 @@ def test_create_schema(connect_h2):
 
 def test_small(connect_h2):
     branches_small = generate_branches(10)
-    clear_table(table, connect_h2)
+    clear_table(connect_h2)
     populate_branches(branches_small, connect_h2)
     count_small = count_rows(table, connect_h2)
     assert (10 == count_small)
-    clear_table(table, connect_h2)
+    clear_table(connect_h2)
     count_small = count_rows(table, connect_h2)
     assert (0 == count_small)
     connect_h2.rollback()
@@ -48,11 +48,11 @@ def test_small(connect_h2):
 
 def test_large(connect_h2):
     branches_large = generate_branches(1000)
-    clear_table(table, connect_h2)
+    clear_table(connect_h2)
     populate_branches(branches_large, connect_h2)
     count_large = count_rows(table, connect_h2)
     assert (1000 == count_large)
-    clear_table(table, connect_h2)
+    clear_table(connect_h2)
     count_large = count_rows(table, connect_h2)
     assert (0 == count_large)
     connect_h2.rollback()
@@ -60,13 +60,13 @@ def test_large(connect_h2):
 
 def test_stress(connect_h2):
     branches_large = generate_branches(10000)
-    clear_table(table, connect_h2)
+    clear_table(connect_h2)
     populate_branches(branches_large, connect_h2)
-    count_large = count_rows(table, connect_h2)
-    assert (10000 == count_large)
-    clear_table(table, connect_h2)
-    count_large = count_rows(table, connect_h2)
-    assert (0 == count_large)
+    count_stress = count_rows(table, connect_h2)
+    assert (10000 == count_stress)
+    clear_table(connect_h2)
+    count_stress = count_rows(table, connect_h2)
+    assert (0 == count_stress)
     connect_h2.rollback()
 
 
