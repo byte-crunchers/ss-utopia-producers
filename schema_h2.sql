@@ -13,16 +13,15 @@
 --
 -- Current Database: "bytecrunchers"
 --
-DROP SCHEMA IF EXISTS bytecrunchers CASCADE;
 
-CREATE SCHEMA bytecrunchers;
+
+CREATE SCHEMA IF NOT EXISTS bytecrunchers;
 
 SET SCHEMA bytecrunchers;
 --
 -- Table structure for table "account_types"
 --
 
-DROP TABLE IF EXISTS "account_types";
 
 CREATE TABLE "account_types" (
   "id" varchar(45) NOT NULL,
@@ -41,7 +40,6 @@ CREATE TABLE "account_types" (
 -- Table structure for table "accounts"
 --
 
-DROP TABLE IF EXISTS "accounts";
 
 CREATE TABLE "accounts" (
   "id" int unsigned NOT NULL ,
@@ -63,7 +61,6 @@ CREATE TABLE "accounts" (
 -- Table structure for table "appointments"
 --
 
-DROP TABLE IF EXISTS "appointments";
 
 CREATE TABLE "appointments" (
   "users_id_ap" int unsigned NOT NULL,
@@ -80,11 +77,13 @@ CREATE TABLE "appointments" (
 -- Table structure for table "branches"
 --
 
-DROP TABLE IF EXISTS "branches";
 
 CREATE TABLE "branches" (
   "id" int unsigned NOT NULL ,
-  "location" varchar(45) NOT NULL);
+  "street_address" varchar(95) NOT NULL,
+  "city" varchar(35) NOT NULL,
+  "state" varchar(2) NOT NULL,
+  "zip" varchar(5) NOT NULL);
 
 --
 -- Dumping data for table "branches"
@@ -95,7 +94,6 @@ CREATE TABLE "branches" (
 -- Table structure for table "card_transactions"
 --
 
-DROP TABLE IF EXISTS "card_transactions";
 
 CREATE TABLE "card_transactions" (
   "id" int unsigned NOT NULL ,
@@ -118,7 +116,6 @@ CREATE TABLE "card_transactions" (
 -- Table structure for table "cards"
 --
 
-DROP TABLE IF EXISTS "cards";
 
 CREATE TABLE "cards" (
   "accounts_id" int unsigned NOT NULL,
@@ -137,7 +134,6 @@ CREATE TABLE "cards" (
 -- Table structure for table "loan_payments"
 --
 
-DROP TABLE IF EXISTS "loan_payments";
 
 CREATE TABLE "loan_payments" (
   "id" int unsigned NOT NULL ,
@@ -155,7 +151,6 @@ CREATE TABLE "loan_payments" (
 -- Table structure for table "loan_type"
 --
 
-DROP TABLE IF EXISTS "loan_type";
 
 CREATE TABLE "loan_type" (
   "id" varchar(45) NOT NULL,
@@ -171,7 +166,6 @@ CREATE TABLE "loan_type" (
 -- Table structure for table "loan_types"
 --
 
-DROP TABLE IF EXISTS "loan_types";
 
 CREATE TABLE "loan_types" (
   "id" varchar(45) NOT NULL,
@@ -188,7 +182,6 @@ CREATE TABLE "loan_types" (
 -- Table structure for table "loans"
 --
 
-DROP TABLE IF EXISTS "loans";
 
 CREATE TABLE "loans" (
   "id" int unsigned NOT NULL ,
@@ -210,7 +203,6 @@ CREATE TABLE "loans" (
 -- Table structure for table "transactions"
 --
 
-DROP TABLE IF EXISTS "transactions";
 
 CREATE TABLE "transactions" (
   "id" int unsigned NOT NULL ,
@@ -229,7 +221,6 @@ CREATE TABLE "transactions" (
 -- Table structure for table "users"
 --
 
-DROP TABLE IF EXISTS "users";
 
 CREATE TABLE "users" (
   "id" int unsigned NOT NULL ,
@@ -268,6 +259,7 @@ ALTER TABLE appointments ADD FOREIGN KEY ("users_id_ap") REFERENCES "users" ("id
 ALTER TABLE branches MODIFY "id" int unsigned NOT NULL AUTO_INCREMENT;
 ALTER TABLE branches ADD PRIMARY KEY ("id");
 ALTER TABLE branches ADD UNIQUE KEY "branches_branches_id_UNIQUE" ("id");
+ALTER TABLE branches ADD UNIQUE KEY "branches_location" ("street_address", "city", "state", "zip");
 ALTER TABLE card_transactions MODIFY "id" int unsigned NOT NULL AUTO_INCREMENT;
 ALTER TABLE card_transactions ADD PRIMARY KEY ("id");
 ALTER TABLE card_transactions ADD UNIQUE KEY "card_transactions_card_transactions_id_UNIQUE" ("id");
