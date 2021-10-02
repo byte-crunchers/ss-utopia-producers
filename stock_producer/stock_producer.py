@@ -48,4 +48,4 @@ def produce(numberOfFiles, delay):
 
 if __name__ == "__main__":
     clean()
-    produce(10, 0)
+    produce(20, 0)
