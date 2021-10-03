@@ -82,9 +82,9 @@ if __name__ == "__main__":
         tp.generate_transactions(200, conn)
         tp.generate_card_transactions(400, conn)
 
-        #lp.generate_loans(20, conn)
+        lp.generate_loans(20, conn)
 
-        #lpp.generate(80, conn)
+        lpp.generate(80, conn)
 
         branches = bp.generate_branches(20)
         bp.clear_table(conn)
