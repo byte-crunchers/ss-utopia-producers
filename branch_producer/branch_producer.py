@@ -18,10 +18,10 @@ class Branch:
         self.street_address = street_address
         self.city = city
         self.state = state
-        self.zip = zip_code
+        self.zip_code = zip_code
 
     def print_branch(self):
-        print(self.street_address, self.city, self.state, self.zip)
+        print(self.street_address, self.city, self.state, self.zip_code)
 
 
 def get_street_address():
@@ -56,13 +56,13 @@ def populate_branches(branch_data, pop_conn):
     for branch in branch_data:
         try:
             query = "INSERT INTO branches(street_address, city, state, zip) VALUES(?, ?, ?, ?) "
-            vals = (branch.street_address, branch.city, branch.state, branch.zip)
+            vals = (branch.street_address, branch.city, branch.state, branch.zip_code)
             curs.execute(query, vals)
         except jaydebeapi.DatabaseError:  # Check for Duplicates
             duplicate_count += 1
             while True:
                 try:
-                    vals = (get_street_address(), get_city(), branch.state, branch.zip)
+                    vals = (get_street_address(), get_city(), branch.state, branch.zip_code)
                     curs.execute(query, vals)
                     break
                 except jaydebeapi.DatabaseError:
