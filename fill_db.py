@@ -77,10 +77,10 @@ if __name__ == "__main__":
 
         ap.generate(100, conn)
 
-        #cp.generate(70, conn)
+        cp.generate(70, conn)
 
-        #tp.generate_transactions(200, conn)
-        #tp.generate_card_transactions(400, conn)
+        tp.generate_transactions(200, conn)
+        tp.generate_card_transactions(400, conn)
 
         #lp.generate_loans(20, conn)
 

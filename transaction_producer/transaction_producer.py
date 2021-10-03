@@ -25,6 +25,7 @@ class Transaction:
         self.memo = fake.text(55)
         self.transfer_value = random.random()*2000.00
         self.time_stamp = datetime.datetime.now()
+        self.status = 0
 
 class Card_Transaction:
     def __init__(self, fake, card_num, account, pin=None,cvc1=None,cvc2=None):
@@ -37,6 +38,7 @@ class Card_Transaction:
         self.cvc2 = cvc2
         self.time_stamp = datetime.datetime.now()
         self.location = random.choice(country_codes)
+        self.status = 0
         
 def get_accounts(conn):
     cur = conn.cursor()
@@ -56,13 +58,13 @@ def generate_transactions(num_rows, conn):
     if (len(accounts) == 0):
         print("ERROR: missing accounts from database")
         return 1
-    query = 'INSERT INTO transactions(origin_account, destination_account, memo, transfer_value, time_stamp) VALUES (?,?,?,?,?)'
+    query = 'INSERT INTO transactions(origin_account, destination_account, memo, transfer_value, time_stamp, status) VALUES (?,?,?,?,?,?)'
     fake = Faker() #this takes about 30ms, so it must be removed from the loop
     cur = conn.cursor()
     for i in range (num_rows):
         accounts_sample = random.sample(accounts, 2) #use so that we can have two random, unique accounts
         trans = Transaction(fake, accounts_sample[0][0], accounts_sample[1][0])
-        vals = (trans.origin_accounts_id, trans.destination_accounts_id, trans.memo, trans.transfer_value, trans.time_stamp.__str__())
+        vals = (trans.origin_accounts_id, trans.destination_accounts_id, trans.memo, trans.transfer_value, trans.time_stamp.__str__(), trans.status)
         cur.execute(query, vals)
 
 def generate_card_transactions(num_rows, conn):
@@ -71,7 +73,7 @@ def generate_card_transactions(num_rows, conn):
     if (len(accounts) == 0 or len(cards) == 0):
         print("ERROR: missing data from database")
         return 1
-    query = 'INSERT INTO card_transactions(card_num, merchant_account_id, memo, transfer_value, pin, cvc1, cvc2, location, time_stamp) VALUES (?,?,?,?,?,?,?,?,?)'
+    query = 'INSERT INTO card_transactions(card_num, merchant_account_id, memo, transfer_value, pin, cvc1, cvc2, location, time_stamp, status) VALUES (?,?,?,?,?,?,?,?,?,?)'
     fake = Faker() #this takes about 30ms, so it must be removed from the loop
     cur = conn.cursor()
     for i in range (num_rows):
@@ -84,7 +86,7 @@ def generate_card_transactions(num_rows, conn):
             pass #amazon does not use cvc because they don't care about the consumer
         else:
             trans.cvc2 = card[3]
-        vals = (trans.card_num, trans.merchant_account_id, trans.memo, trans.transfer_value, trans.pin, trans.cvc1, trans.cvc2, trans.location, trans.time_stamp.__str__())
+        vals = (trans.card_num, trans.merchant_account_id, trans.memo, trans.transfer_value, trans.pin, trans.cvc1, trans.cvc2, trans.location, trans.time_stamp.__str__(), trans.status)
         try:
             cur.execute(query, vals)
         except Error:
@@ -106,14 +108,3 @@ def clear_card_trans(conn):
     query = 'DELETE FROM card_transactions'
     cur.execute(query)
     #doesn't commit until the generate function
-    
-
-#if __name__ == '__main__':
-#    trans_num =  int(sys.argv[1])
-#    card_num = int(sys.argv[2])
-#    conn = connect()
-#    clear_trans(conn)
-#    generate_transactions(trans_num, conn)
-#    clear_card_trans(conn)
-#    generate_card_transactions(card_num, conn)
-#    conn.close()
