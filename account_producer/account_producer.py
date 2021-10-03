@@ -27,7 +27,9 @@ class Account:
             self.due_date = None
             self.limit = None
             self.interest = None
-            self.active = None
+            self.active = False
+            self.approved = False
+            self.confirmed = False
 
 def get_users(conn):
     cur = conn.cursor()
@@ -56,10 +58,13 @@ def create_account(user, account_type): #takes user account number, returns acco
         account.payment_due = account.balance * -0.10 #pay 10%
         account.due_date = datetime.date.today() + datetime.timedelta(days = random.randrange(1,31))
         account.interest = random.random() * 0.1 + 0.03 #random interest from 3% to 13%
-    if (random.random() < 0.1):
-        account.active = 0
-    else:
-        account.active = 1
+    if(random.random() < 0.8): #chance the user confirmed their account over email
+        account.confirmed = True
+        if (random.random() < 0.75 or account_type == "Checking" or account_type == "Savings"): #chance that credit card is approved
+            account.approved = True
+            if (random.random() < 0.8): #chance user hasn't closed the account
+                account.active = True
+
     return account
     
 def generate(num_rows, conn):
@@ -70,13 +75,13 @@ def generate(num_rows, conn):
         return 1
     users = random.sample(users_all, num_rows//2+1) #gets a random sampling of users
                                                 #//2 means the average user will have two accounts 
-    query = 'INSERT INTO accounts(users_id, account_type, balance, payment_due, due_date, credit_limit, debt_interest, active) VALUES (?,?,?,?,?,?,?,?)'
+    query = 'INSERT INTO accounts(users_id, account_type, balance, payment_due, due_date, credit_limit, debt_interest, active, approved, confirmed) VALUES (?,?,?,?,?,?,?,?,?,?)'
     acc_types = get_account_types(conn)
     cur = conn.cursor()
     for i in range (num_rows):
         account = create_account(random.choice(users)[0], random.choice(acc_types)[0]) #takes a random user id and account type
         vals = (account.user, account.account_type, account.balance, account.payment_due,\
-         date_to_string(account.due_date), account.limit, account.interest, account.active)
+         date_to_string(account.due_date), account.limit, account.interest, account.active, account.approved, account.confirmed)
         try:
             cur.execute(query, vals)
         except Error:

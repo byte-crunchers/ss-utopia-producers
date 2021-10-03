@@ -22,7 +22,7 @@ def populate_users(user_data, pop_conn):
     curs = pop_conn.cursor()
     for user in user_data:
         query = "INSERT INTO users(username, email, password, first_name, last_name, is_admin, active) VALUES(?, ?, ?, ?, ?, ?, ?)"
-        vals = (generate_ud.generate_username()[0], generate_ud.get_email(user.f_name, user.l_name), user.password, user.f_name, user.l_name, user.is_admin, user.active)
+        vals = (user.user, user.email, user.password, user.f_name, user.l_name, user.is_admin, user.active)
         try:
             curs.execute(query, vals)
         except (jaydebeapi.DatabaseError):  # Check for Duplicates
@@ -71,20 +71,20 @@ if __name__ == "__main__":
             ('Savings', 0.00500, 0.00, 0.0000, 0.0000, 0.00);")
 
         cur.execute("INSERT INTO loan_types VALUES \
-            ('Morgage', 0.04, 0.004, 300),\
-            ('Auto', 0.05, 0.00499, 70),\
-            ('Student', 0.03, 0.0035, 200);")
+            ('Morgage', 0.04, 0.004, 300, 120, 360),\
+            ('Auto', 0.05, 0.00499, 70, 12, 72),\
+            ('Student', 0.03, 0.0035, 200, 60, 180);")
 
         ap.generate(100, conn)
 
-        cp.generate(70, conn)
+        #cp.generate(70, conn)
 
-        tp.generate_transactions(200, conn)
-        tp.generate_card_transactions(400, conn)
+        #tp.generate_transactions(200, conn)
+        #tp.generate_card_transactions(400, conn)
 
-        lp.generate_loans(20, conn)
+        #lp.generate_loans(20, conn)
 
-        lpp.generate(80, conn)
+        #lpp.generate(80, conn)
 
         branches = bp.generate_branches(20)
         bp.clear_table(conn)
