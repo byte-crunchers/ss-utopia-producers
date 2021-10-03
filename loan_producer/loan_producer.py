@@ -23,10 +23,22 @@ class Loan:
         self.monthly = self.balance * self.interest_rate * -0.5 #basically just pay 6x the interest rate
         self.payment_due = self.monthly * (random.random()* 0.2 + 1) #20% jitter on monthly, for underpayment, late fees, etc 
         self.type = type
-        if random.random() < 0.9:
-            self.active = True
+        if(random.random() < 0.8): #chance the user confirmed this loan over email
+            self.confirmed = True
+            if (random.random() < 0.8): #chance that loan is approved
+                self.approved = True
+                if (random.random() < 0.8): #chance the loan hasn't been closed/suspended
+                    self.active = True
+                else:
+                    self.active = False
+            else:
+                self.approved = False
+                self.active = False
         else:
+            self.confirmed = False
+            self.approved = False
             self.active = False
+        
 
 def get_users(conn):
     cur = conn.cursor()
@@ -43,11 +55,13 @@ def get_loan_types(conn):
 def generate_loans(num_rows, conn):
     users = get_users(conn)
     types = get_loan_types(conn)
-    query = 'INSERT INTO loans(users_id, balance, interest_rate, due_date, payment_due, loan_type, monthly_payment, active) VALUES (?,?,?,?,?,?,?,?)'
+    query = 'INSERT INTO loans(users_id, balance, interest_rate, due_date, payment_due, loan_type, monthly_payment, \
+        active, approved, confirmed) VALUES (?,?,?,?,?,?,?,?,?,?)'
     cur = conn.cursor()
     for i in range (num_rows):
         loan = Loan(random.choice(users)[0], random.choice(types)[0]) #takes a random user id and a random loan_type
-        vals = (loan.user_id, loan.balance, loan.interest_rate, str(loan.due_date), loan.payment_due, loan.type, loan.monthly, loan.active)
+        vals = (loan.user_id, loan.balance, loan.interest_rate, str(loan.due_date), loan.payment_due, loan.type,\
+            loan.monthly, loan.active, loan.approved, loan.confirmed)
         cur.execute(query, vals)
 
 def clear(conn):
