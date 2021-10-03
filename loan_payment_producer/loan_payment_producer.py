@@ -22,6 +22,7 @@ class Payment:
         self.account_id = account
         self.amount = random.random()*2000.00
         self.time_stamp = datetime.datetime.now()
+        self.status = 0
 
 def generate(num_rows, conn):
     accounts = get_table_id(conn, "accounts")
@@ -29,11 +30,11 @@ def generate(num_rows, conn):
     if (len(accounts) == 0 or len(loans) == 0):
         print("ERROR: missing accounts from database")
         raise Exception('Missing data')
-    query = 'INSERT INTO loan_payments(loan_id, account_id, amount, time_stamp) VALUES (?,?,?,?)'
+    query = 'INSERT INTO loan_payments(loan_id, account_id, amount, time_stamp, status) VALUES (?,?,?,?,?)'
     cur = conn.cursor()
     for i in range (num_rows):
         pmnt = Payment(random.choice(loans)[0], random.choice(accounts)[0])
-        vals = (pmnt.loan_id, pmnt.account_id, pmnt.amount, pmnt.time_stamp.__str__())
+        vals = (pmnt.loan_id, pmnt.account_id, pmnt.amount, pmnt.time_stamp.__str__(), pmnt.status)
         cur.execute(query, vals)
 
 def clear(conn):
