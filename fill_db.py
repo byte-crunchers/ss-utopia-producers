@@ -3,7 +3,7 @@ import traceback
 import jaydebeapi
 import os
 
-import user_producer.generate_user_data as generate_ud
+import user_producer.user_producer as up
 import account_producer.account_producer as ap
 import card_producer.card_producer as cp
 import transaction_producer.transaction_producer as tp
@@ -16,28 +16,7 @@ def connect_h2():
     con.jconn.setAutoCommit(False)
     return con
 
-def populate_users(user_data, pop_conn):
-    duplicate_count = 0
-    dd_count = 0
-    curs = pop_conn.cursor()
-    for user in user_data:
-        query = "INSERT INTO users(username, email, password, first_name, last_name, is_admin, active) VALUES(?, ?, ?, ?, ?, ?, ?)"
-        vals = (user.user, user.email, user.password, user.f_name, user.l_name, user.is_admin, user.active)
-        try:
-            curs.execute(query, vals)
-        except (jaydebeapi.DatabaseError):  # Check for Duplicates
-            traceback.print_exc()
-            duplicate_count += 1
-            # Find a unique username and email that is not in the database
-            while True:
-                try:
-                    query = "INSERT INTO users(username, email, password, first_name, last_name, is_admin, active) VALUES(?, ?, ?, ?, ?, ?, ?) "
-                    vals = (generate_ud.generate_username()[0], generate_ud.get_email(user.f_name, user.l_name), user.password, user.f_name, user.l_name, user.is_admin, user.active)
-                    curs.execute(query, vals)
-                    break
-                except (jaydebeapi.DatabaseError):
-                    dd_count += 1
-                    continue
+
 
 if __name__ == "__main__":
     if not len(sys.argv) == 2:
@@ -58,8 +37,7 @@ if __name__ == "__main__":
                 break
             cur.execute(line)
         
-        users_list = generate_ud.get_user_data(60)
-        populate_users(users_list, conn)
+        up.populate_users(up.get_user_data(100), conn)
 
         cur.execute("INSERT INTO account_types VALUES \
             ('Basic Credit', 0.15000, 0.00, 0.0000, 0.0300, 29.00),\
