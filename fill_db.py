@@ -25,7 +25,7 @@ if __name__ == "__main__":
         print("please specify either mysql or h2")
     else:
         if(sys.argv[1].lower() == "mysql"):
-            conn = ap.connect("dbkey.json")
+            conn = ap.connect()
             schema = open("schema_mysql.sql")
         else:
             conn = connect_h2()
