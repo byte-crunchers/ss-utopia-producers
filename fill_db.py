@@ -1,21 +1,22 @@
-import sys
-import traceback
-import jaydebeapi
 import os
+import sys
 
-import user_producer.user_producer as up
+import jaydebeapi
+
 import account_producer.account_producer as ap
-import card_producer.card_producer as cp
-import transaction_producer.transaction_producer as tp
-import loan_producer.loan_producer as lp
-import loan_payment_producer.loan_payment_producer as lpp
 import branch_producer.branch_producer as bp
+import card_producer.card_producer as cp
+import loan_payment_producer.loan_payment_producer as lpp
+import loan_producer.loan_producer as lp
+import transaction_producer.transaction_producer as tp
+import user_producer.user_producer as up
+
 
 def connect_h2():
-    con = jaydebeapi.connect("org.h2.Driver", "jdbc:h2:tcp://localhost/~/test;MODE=MySQL", ["sa", ""], os.environ.get("H2") )
+    con = jaydebeapi.connect("org.h2.Driver", "jdbc:h2:tcp://localhost/~/test;MODE=MySQL", ["sa", ""],
+                             os.environ.get("H2"))
     con.jconn.setAutoCommit(False)
     return con
-
 
 
 if __name__ == "__main__":
@@ -24,7 +25,7 @@ if __name__ == "__main__":
     elif sys.argv[1].lower() != "mysql" and sys.argv[1].lower() != "h2":
         print("please specify either mysql or h2")
     else:
-        if(sys.argv[1].lower() == "mysql"):
+        if (sys.argv[1].lower() == "mysql"):
             conn = ap.connect()
             schema = open("schema_mysql.sql")
         else:
@@ -36,7 +37,7 @@ if __name__ == "__main__":
             if line == '' or line.isspace():
                 break
             cur.execute(line)
-        
+
         up.populate_users(up.get_user_data(100), conn)
 
         cur.execute("INSERT INTO account_types VALUES \
@@ -54,22 +55,14 @@ if __name__ == "__main__":
             ('Student', 0.03, 0.0035, 200, 60, 180);")
 
         ap.generate(100, conn)
-
         cp.generate(70, conn)
-
         tp.generate_transactions(200, conn)
         tp.generate_card_transactions(400, conn)
-
         lp.generate_loans(200, conn)
-
         lpp.generate(80, conn)
-
         branches = bp.generate_branches(20)
         bp.clear_table(conn)
         bp.populate_branches(branches, conn)
 
         conn.commit()
         conn.close()
-        
-
-

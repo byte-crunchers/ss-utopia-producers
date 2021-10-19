@@ -57,7 +57,7 @@ def create_account(user, account_type):  # takes user account number, returns ac
     account = Account()
     account.user = user
     account.account_type = account_type
-    if (account_type == "Checking" or account_type == "Savings"):  # non-loan accounts
+    if account_type == "Checking" or account_type == "Savings":  # non-loan accounts
         account.balance = random.uniform(0, 100000)
         account.payment_due = 0
         account.interest = 0
@@ -67,12 +67,12 @@ def create_account(user, account_type):  # takes user account number, returns ac
         account.payment_due = account.balance * -0.10  # pay 10%
         account.due_date = datetime.date.today() + datetime.timedelta(days=random.randrange(1, 31))
         account.interest = random.random() * 0.1 + 0.03  # random interest from 3% to 13%
-    if (random.random() < 0.9):  # chance the user confirmed their account over email
+    if random.random() < 0.9:  # chance the user confirmed their account over email
         account.confirmed = True
-        if (
-                random.random() < 0.75 or account_type == "Checking" or account_type == "Savings"):  # chance that credit card is approved
+        if (    # chance that credit card is approved
+                random.random() < 0.75 or account_type == "Checking" or account_type == "Savings"):
             account.approved = True
-            if (random.random() < 0.9):  # chance user hasn't closed the account
+            if random.random() < 0.9:  # chance user hasn't closed the account
                 account.active = True
 
     return account
@@ -80,19 +80,20 @@ def create_account(user, account_type):  # takes user account number, returns ac
 
 def generate(num_rows, conn):
     users_all = get_users(conn)
-    if (len(users_all) < num_rows // 2 + 1):
-        print("Not enough users in the database to support that many rows \n" \
+    if len(users_all) < num_rows // 2 + 1:
+        print("Not enough users in the database to support that many rows \n"
               + "The database only supports {:d} rows".format(len(users_all) * 2 - 1))
         return 1
     users = random.sample(users_all, num_rows // 2 + 1)  # gets a random sampling of users
     # //2 means the average user will have two accounts
-    query = 'INSERT INTO accounts(users_id, account_type, balance, payment_due, due_date, credit_limit, debt_interest, active, approved, confirmed) VALUES (?,?,?,?,?,?,?,?,?,?)'
+    query = 'INSERT INTO accounts(users_id, account_type, balance, payment_due, due_date, credit_limit, ' \
+            'debt_interest, active, approved, confirmed) VALUES (?,?,?,?,?,?,?,?,?,?) '
     acc_types = get_account_types(conn)
     cur = conn.cursor()
     for i in range(num_rows):
         account = create_account(random.choice(users)[0],
                                  random.choice(acc_types)[0])  # takes a random user id and account type
-        vals = (account.user, account.account_type, account.balance, account.payment_due, \
+        vals = (account.user, account.account_type, account.balance, account.payment_due,
                 date_to_string(account.due_date), account.limit, account.interest, account.active, account.approved,
                 account.confirmed)
         try:
