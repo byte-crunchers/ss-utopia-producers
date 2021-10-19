@@ -1,17 +1,26 @@
 import datetime
-import json
+import os
 import random
-
+import traceback
 import jaydebeapi
 from jaydebeapi import Error
+
+
+# Environment Variables
+mysql_pass = os.environ.get("MYSQL_PASS")
+mysql_user = os.environ.get("MYSQL_USER")
+mysql_jar = os.environ.get("MYSQL_JAR")
+mysql_loc = os.environ.get("MYSQL_LOC")
 
 
 def connect():
     con_try = None
     try:
-        key = json.load(open('../dbkey.json', 'r'))
-        con_try = jaydebeapi.connect(key["driver"], key["location"], key["login"], key["jar"])
+        con_try = jaydebeapi.connect("com.mysql.cj.jdbc.Driver", mysql_loc,
+                                     [mysql_user, mysql_pass], mysql_jar)
+        con_try.jconn.setAutoCommit(False)
     except Error:
+        traceback.print_exc()
         print("There was a problem connecting to the database, please make sure the database information is correct!")
     return con_try
 
