@@ -26,11 +26,11 @@ class Loan:
         self.payment_due = self.monthly * (
                     random.random() * 0.2 + 1)  # 20% jitter on monthly, for underpayment, late fees, etc
         self.type = type
-        if random.random() < 0.9:  # chance the user confirmed this loan over email
+        if random.random() < 0.93:  # chance the user confirmed this loan over email
             self.confirmed = True
-            if random.random() < 0.9:  # chance that loan is approved
+            if random.random() < 0.93:  # chance that loan is approved
                 self.approved = True
-                if random.random() < 0.9:  # chance the loan hasn't been closed/suspended
+                if random.random() < 0.93:  # chance the loan hasn't been closed/suspended
                     self.active = True
                 else:
                     self.active = False

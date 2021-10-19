@@ -58,7 +58,7 @@ def create_account(user, account_type):  # takes user account number, returns ac
     account.user = user
     account.account_type = account_type
     if account_type == "Checking" or account_type == "Savings":  # non-loan accounts
-        account.balance = random.uniform(0, 100000)
+        account.balance = random.uniform(0, 10000)
         account.payment_due = 0
         account.interest = 0
     else:
