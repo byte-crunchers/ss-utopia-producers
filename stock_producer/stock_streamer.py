@@ -29,6 +29,7 @@ class Stock:
         self.low = low
         self.timestamp = datetime.datetime.now()
         self.volatility = volatility
+        self.status = 0
 
     def print_stock(self):
         print(self.ticker, self.name, self.price, self.market_cap, self.volume, self.high, self.low, self.volatility,
