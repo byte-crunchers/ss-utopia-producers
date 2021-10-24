@@ -78,6 +78,7 @@ def update_stock(upd_stocks, interval_in_seconds):
                 kin = boto3.client('kinesis', config=my_config, aws_access_key_id=access_key,
                                    aws_secret_access_key=secret_key)
                 print(json.dumps(stock.__dict__, default=str))
+                stock.type = 'stock'  # for the consumer to know what type of message it is
                 kin.put_record(StreamName='byte-henry', Data=json.dumps(stock.__dict__, default=str),
                                PartitionKey='trans key')
             except:
