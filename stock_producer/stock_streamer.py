@@ -3,6 +3,7 @@ import os
 import random
 import time
 import traceback
+import datetime
 
 import boto3
 import pandas as pd
@@ -26,7 +27,9 @@ class Stock:
         self.volume = volume
         self.high = high
         self.low = low
+        self.timestamp = datetime.datetime.now()
         self.volatility = volatility
+
 
     def print_stock(self):
         print(self.ticker, self.name, self.price, self.market_cap, self.volume, self.high, self.low, self.volatility,
@@ -41,7 +44,7 @@ def get_initial_stock(file, num_of_stocks):
             lp_list = pd.read_csv(file)
             pd_stock = lp_list.sample()
             pd.set_option('display.max_columns', None)
-            volatility = round(random.uniform(0.02, 0.08), 2)
+            volatility = round(random.uniform(0.02, 0.05), 2)
             initial_stock = Stock(pd_stock.iat[0, 0], pd_stock.iat[0, 1], float(pd_stock.iat[0, 2].strip("$")),
                                   pd_stock.iat[0, 5], pd_stock.iat[0, 8], float(pd_stock.iat[0, 2].strip("$")),
                                   float(pd_stock.iat[0, 2].strip("$")), volatility, None)
@@ -62,12 +65,14 @@ def update_stock(upd_stocks, interval_in_seconds):
             if change_percent > stock.volatility:
                 change_percent -= (2 * stock.volatility)
             change_amount = stock.price * change_percent
+            if stock.price + change_amount < 0:
+                continue
             new_price = stock.price + change_amount
             if new_price > stock.high:
                 stock.high = round(new_price, 2)
             if new_price < stock.low:
                 stock.low = round(new_price, 2)
-            stock.price = round(new_price, 2)
+            stock.price = round(new_price, 4)
             stock.percent_change = round(change_percent, 4)
             # Send stock data to kiniesis stream
             try:
