@@ -1,0 +1,16 @@
+{
+    "ticker": "AMD",
+    "name": "Advanced Micro Devices",
+    "price": 109.5576225183586,
+    "marketCap": 134182002.43677065,
+    "volume": 60925000,
+    "PE": 39.75,
+    "dividendYield": 0,
+    "dividendRate": 0,
+    "yearHigh": 122.49,
+    "yearLow": 72.5,
+    "open": 111.19,
+    "high": 111.21,
+    "low": 109.03,
+    "timestamp": "2021-10-22 16:39:08.714620"
+}
