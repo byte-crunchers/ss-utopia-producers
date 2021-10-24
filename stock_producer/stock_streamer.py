@@ -65,7 +65,7 @@ def update_stock(upd_stocks, interval_in_seconds):
                 change_percent -= (2 * stock.volatility)
             change_amount = stock.price * change_percent
             if stock.price + change_amount < 0:
-                continue
+                continue  # If the next step would result in a negative price, redo change calculation
             new_price = stock.price + change_amount
             if new_price > stock.high:
                 stock.high = round(new_price, 2)
@@ -73,7 +73,7 @@ def update_stock(upd_stocks, interval_in_seconds):
                 stock.low = round(new_price, 2)
             stock.price = round(new_price, 4)
             stock.percent_change = round(change_percent, 4)
-            # Send stock data to kiniesis stream
+            # Send stock data to Kinesis stream
             try:
                 kin = boto3.client('kinesis', config=my_config, aws_access_key_id=access_key,
                                    aws_secret_access_key=secret_key)
