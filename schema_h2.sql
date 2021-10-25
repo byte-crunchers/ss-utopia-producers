@@ -272,7 +272,18 @@ CREATE TABLE "users" (
 -- Dumping data for table "users"
 --
 
-
+DROP TABLE IF EXISTS "stocks";
+CREATE TABLE "stocks" (
+  "id" int unsigned NOT NULL,
+  "ticker" varchar(5) NOT NULL,
+  "name" varchar(256) NOT NULL,
+  "price" decimal(11,4) NOT NULL,
+  "market_cap" decimal(13,2) NULL,
+  "volume" bigint NOT NULL,
+  "high" decimal(11,4) NOT NULL,
+  "low" decimal(11,4) NOT NULL,
+  "timestamp" datetime NOT NULL,
+  "status" tinyint NOT NULL)
 
 
 
@@ -333,3 +344,5 @@ ALTER TABLE users ADD PRIMARY KEY ("id");
 ALTER TABLE users ADD UNIQUE KEY "users_username_UNIQUE" ("username");
 ALTER TABLE users ADD UNIQUE KEY "users_users_id_UNIQUE" ("id");
 ALTER TABLE users ADD UNIQUE KEY "users_email_UNIQUE" ("email");
+ALTER TABLE stocks MODIFY "id" int unsigned NOT NULL AUTO_INCREMENT;
+ALTER TABLE stocks ADD PRIMARY KEY ("id");

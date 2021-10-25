@@ -308,17 +308,7 @@ CREATE TABLE IF NOT EXISTS `bytecrunchers`.`transactions` (
   PRIMARY KEY (`id`),
   UNIQUE INDEX `transactions_id_UNIQUE` (`id` ASC) VISIBLE,
   INDEX `origin_accounts_id_idx` (`origin_account` ASC) VISIBLE,
-  INDEX `destinationaccounts_id_idx` (`destination_account` ASC) VISIBLE,
-  CONSTRAINT `destinationaccounts_id`
-    FOREIGN KEY (`destination_account`)
-    REFERENCES `bytecrunchers`.`accounts` (`id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE,
-  CONSTRAINT `origin_accounts_id`
-    FOREIGN KEY (`origin_account`)
-    REFERENCES `bytecrunchers`.`accounts` (`id`)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE)
+  INDEX `destinationaccounts_id_idx` (`destination_account` ASC) VISIBLE)
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4
 COLLATE = utf8mb4_0900_ai_ci;
@@ -359,6 +349,26 @@ CREATE TABLE IF NOT EXISTS `bytecrunchers`.`confirmation` (
     REFERENCES `bytecrunchers`.`accounts` (`id`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+-- -----------------------------------------------------
+-- Table `bytecrunchers`.`stocks`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `bytecrunchers`.`stocks` ;
+
+CREATE TABLE IF NOT EXISTS `bytecrunchers`.`stocks` (
+  `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `ticker` VARCHAR(5) NOT NULL,
+  `name` VARCHAR(256) NOT NULL,
+  `price` DECIMAL(11,4) NOT NULL,
+  `market_cap` DECIMAL(13,2) NULL,
+  `volume` BIGINT NOT NULL,
+  `high` DECIMAL(11,4) NOT NULL,
+  `low` DECIMAL(11,4) NOT NULL,
+  `timestamp` DATETIME NOT NULL,
+  `status` TINYINT NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE)
 ENGINE = InnoDB;
 
 
