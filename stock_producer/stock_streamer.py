@@ -6,6 +6,7 @@ import time
 import traceback
 
 import boto3
+import numpy as np
 import pandas as pd
 from botocore.config import Config
 
@@ -61,6 +62,7 @@ def update_stock(upd_stocks, interval_in_seconds):
             # stock.print_stock()
             print(str(stock.ticker) + " price: " + str(stock.price))
             rnd = round(random.uniform(0, 1), 2)
+            volume_change = np.random.normal(loc=1, scale=0.005)  # normal distribution with an SD of 5%
             change_percent = 2 * stock.volatility * rnd
             if change_percent > stock.volatility:
                 change_percent -= (2 * stock.volatility)
@@ -72,8 +74,13 @@ def update_stock(upd_stocks, interval_in_seconds):
                 stock.high = round(new_price, 2)
             if new_price < stock.low:
                 stock.low = round(new_price, 2)
+            print(change_percent)
+            stock.timestamp = datetime.datetime.now()
+            stock.volume = round(stock.volume * volume_change)
+            stock.market_cap = round(stock.market_cap + (stock.market_cap * change_percent), 2)
             stock.price = round(new_price, 4)
             stock.percent_change = round(change_percent, 4)
+            # stock.timestamp = datetime.datetime.now()
             # Send stock data to Kinesis stream
             try:
                 kin = boto3.client('kinesis', config=my_config, aws_access_key_id=access_key,
