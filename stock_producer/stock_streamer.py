@@ -71,7 +71,7 @@ def update_stock(upd_stocks, interval_in_seconds, years):
             if day == 1:
                 first_price = stock.price
             rnd = round(random.uniform(0, 1), 2)
-            volume_change = np.random.normal(loc=1, scale=0.005)  # normal distribution with an SD of 5%
+            volume_change = np.random.normal(loc=1, scale=0.01)  # normal distribution with an SD of 10%
             change_percent = 2 * stock.volatility * rnd
             if change_percent > stock.volatility:
                 change_percent -= (2 * stock.volatility)
@@ -111,4 +111,4 @@ def update_stock(upd_stocks, interval_in_seconds, years):
 
 if __name__ == '__main__':
     stocks = get_initial_stock("nasdaq_tickers.csv", 4)
-    update_stock(stocks, 0, 1)
+    update_stock(stocks, 4, 1)
