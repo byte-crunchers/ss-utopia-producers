@@ -220,6 +220,7 @@ CREATE TABLE IF NOT EXISTS `bytecrunchers`.`loan_types` (
   `late_fee` DECIMAL(6,2) UNSIGNED NOT NULL,
   `term_min` SMALLINT NOT NULL,
   `term_max` SMALLINT NOT NULL,
+  `is_secured` TINYINT NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `loan_type_id_UNIQUE` (`id` ASC) VISIBLE)
 ENGINE = InnoDB

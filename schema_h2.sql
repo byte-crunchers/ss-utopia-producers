@@ -193,7 +193,8 @@ CREATE TABLE "loan_types" (
   "lower_range" decimal(4,4) unsigned NOT NULL,
   "late_fee" decimal(6,2) unsigned NOT NULL,
   "term_min" smallint NOT NULL,
-  "term_max" smallint NOT NULL);
+  "term_max" smallint NOT NULL,
+  "is_secured" tinyint NOT NULL);
 
 --
 -- Dumping data for table "loan_types"
