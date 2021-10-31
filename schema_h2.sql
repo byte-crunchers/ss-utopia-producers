@@ -189,8 +189,8 @@ DROP TABLE IF EXISTS "loan_types";
 
 CREATE TABLE "loan_types" (
   "id" varchar(45) NOT NULL,
-  "upper_range" decimal(4,4) unsigned NOT NULL,
-  "lower_range" decimal(4,4) unsigned NOT NULL,
+  "upper_range" decimal(8,4) unsigned NOT NULL,
+  "lower_range" decimal(8,4) unsigned NOT NULL,
   "late_fee" decimal(6,2) unsigned NOT NULL,
   "term_min" smallint NOT NULL,
   "term_max" smallint NOT NULL,
@@ -276,13 +276,13 @@ CREATE TABLE "users" (
 DROP TABLE IF EXISTS "stocks";
 CREATE TABLE "stocks" (
   "id" int unsigned NOT NULL,
-  "ticker" varchar(5) NOT NULL,
+  "ticker" varchar(6) NOT NULL,
   "name" varchar(256) NOT NULL,
-  "price" decimal(11,4) NOT NULL,
-  "market_cap" decimal(13,2) NULL,
+  "price" decimal(13,6) NOT NULL,
+  "market_cap" decimal(15,2) NULL,
   "volume" bigint NOT NULL,
-  "high" decimal(11,4) NOT NULL,
-  "low" decimal(11,4) NOT NULL,
+  "high" decimal(13,6) NOT NULL,
+  "low" decimal(13,6) NOT NULL,
   "timestamp" datetime NOT NULL,
   "status" tinyint NOT NULL)
 
@@ -311,8 +311,6 @@ ALTER TABLE branches ADD UNIQUE KEY "branches_location_UNIQUE" ("street_address"
 ALTER TABLE card_transactions MODIFY "id" int unsigned NOT NULL AUTO_INCREMENT;
 ALTER TABLE card_transactions ADD PRIMARY KEY ("id");
 ALTER TABLE card_transactions ADD UNIQUE KEY "card_transactions_card_transactions_id_UNIQUE" ("id");
-ALTER TABLE card_transactions ADD FOREIGN KEY ("card_num") REFERENCES "cards" ("card_num") ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE card_transactions ADD FOREIGN KEY ("merchant_account_id") REFERENCES "accounts" ("id") ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE cards ADD PRIMARY KEY ("card_num");
 ALTER TABLE cards ADD UNIQUE KEY "cards_cards_accounts_id_UNIQUE" ("accounts_id");
 ALTER TABLE cards ADD FOREIGN KEY ("accounts_id") REFERENCES "accounts" ("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -326,8 +324,6 @@ ALTER TABLE confirmation ADD FOREIGN KEY ("user") REFERENCES "users" ("id");
 ALTER TABLE loan_payments MODIFY "id" int unsigned NOT NULL AUTO_INCREMENT;
 ALTER TABLE loan_payments ADD PRIMARY KEY ("id");
 ALTER TABLE loan_payments ADD UNIQUE KEY "loan_payments_loan_pay_ID_UNIQUE" ("id");
-ALTER TABLE loan_payments ADD FOREIGN KEY ("account_id") REFERENCES "accounts" ("id") ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE loan_payments ADD FOREIGN KEY ("loan_id") REFERENCES "loans" ("id") ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE loan_types ADD PRIMARY KEY ("id");
 ALTER TABLE loan_types ADD UNIQUE KEY "loan_types_loan_type_id_UNIQUE" ("id");
 ALTER TABLE loans MODIFY "id" int unsigned NOT NULL AUTO_INCREMENT;
@@ -338,8 +334,6 @@ ALTER TABLE loans ADD FOREIGN KEY ("users_id") REFERENCES "users" ("id") ON DELE
 ALTER TABLE transactions MODIFY "id" int unsigned NOT NULL AUTO_INCREMENT;
 ALTER TABLE transactions ADD PRIMARY KEY ("id");
 ALTER TABLE transactions ADD UNIQUE KEY "transactions_transactions_id_UNIQUE" ("id");
-ALTER TABLE transactions ADD FOREIGN KEY ("destination_account") REFERENCES "accounts" ("id") ON DELETE CASCADE ON UPDATE CASCADE;
-ALTER TABLE transactions ADD FOREIGN KEY ("origin_account") REFERENCES "accounts" ("id") ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE users MODIFY "id" int unsigned NOT NULL AUTO_INCREMENT;
 ALTER TABLE users ADD PRIMARY KEY ("id");
 ALTER TABLE users ADD UNIQUE KEY "users_username_UNIQUE" ("username");

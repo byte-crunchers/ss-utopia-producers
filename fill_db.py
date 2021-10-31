@@ -25,7 +25,7 @@ if __name__ == "__main__":
     elif sys.argv[1].lower() != "mysql" and sys.argv[1].lower() != "h2":
         print("please specify either mysql or h2")
     else:
-        if (sys.argv[1].lower() == "mysql"):
+        if sys.argv[1].lower() == "mysql":
             conn = ap.connect()
             schema = open("schema_mysql.sql")
         else:
@@ -50,9 +50,11 @@ if __name__ == "__main__":
             ('Savings', 0.00500, 0.00, 0.0000, 0.0000, 0.00);")
 
         cur.execute("INSERT INTO loan_types VALUES \
-            ('Morgage', 0.04, 0.004, 300, 120, 360, 0),\
-            ('Auto', 0.05, 0.00499, 70, 12, 72, 0),\
-            ('Student', 0.03, 0.0035, 200, 60, 180, 0);")
+            ('Mortgage', 0.078, 0.0312, 45, 96, 360, 1),\
+            ('Auto', 0.1392, 0.0324, 25, 24, 96, 1),\
+            ('Student', 0.12, 0.03, 35, 60, 300, 0),\
+            ('Personal', 0.36, 0.06, 55, 12, 60, 0),\
+            ('Payday', 5.16, 3.90, 55, 1, 12, 0);")
 
         ap.generate(100, conn)
         cp.generate(70, conn)
