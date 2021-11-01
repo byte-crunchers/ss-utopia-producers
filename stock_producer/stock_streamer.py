@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime, date, timedelta
 import json
 import os
 import random
@@ -28,13 +28,13 @@ class Stock:
         self.volume = volume
         self.high = high
         self.low = low
-        self.timestamp = datetime.datetime.now()
+        self.timestamp = datetime.combine(date.today(), datetime.min.time())
         self.volatility = volatility
         self.status = 0
 
     def print_stock(self):
         print(self.ticker, self.name, self.price, self.market_cap, self.volume, self.high, self.low, self.volatility,
-              self.percent_change, sep=" || ")
+              self.percent_change, self.timestamp, sep=" || ")
 
 
 # Parse csv into Stocks using pandas
@@ -45,9 +45,9 @@ def get_initial_stock(file, num_of_stocks):
             lp_list = pd.read_csv(file)
             pd_stock = lp_list.sample()
             pd.set_option('display.max_columns', None)
-            volatility = round(random.uniform(0.02, 0.05), 2)
+            volatility = round(random.uniform(0.01, 0.08), 6)
             initial_stock = Stock(pd_stock.iat[0, 0], pd_stock.iat[0, 1], float(pd_stock.iat[0, 2].strip("$")),
-                                  pd_stock.iat[0, 5], pd_stock.iat[0, 8], float(pd_stock.iat[0, 2].strip("$")),
+                                  float(pd_stock.iat[0, 5]), pd_stock.iat[0, 8], float(pd_stock.iat[0, 2].strip("$")),
                                   float(pd_stock.iat[0, 2].strip("$")), volatility, None)
             init_stocks.append(initial_stock)
         except:
@@ -56,12 +56,22 @@ def get_initial_stock(file, num_of_stocks):
 
 
 # Update stock price based on volatile number algorithm and stream to kinesis
-def update_stock(upd_stocks, interval_in_seconds):
-    while True:
+def update_stock(upd_stocks, interval_in_seconds, years):
+    day = 1
+    first_price = None
+    last_price = None
+    neg_count = 0
+    pos_count = 0
+
+    # Update stock data every dat for the given amount of years
+    while day <= years * 365:
         for stock in upd_stocks:
-            print(str(stock.ticker) + " price: " + str(stock.price))
+            # print(str(stock.ticker) + " price: " + str(stock.price))
+            # stock.print_stock()
+            if day == 1:
+                first_price = stock.price
             rnd = round(random.uniform(0, 1), 2)
-            volume_change = np.random.normal(loc=1, scale=0.005)  # normal distribution with an SD of 5%
+            volume_change = np.random.normal(loc=1, scale=0.01)  # normal distribution with an SD of 10%
             change_percent = 2 * stock.volatility * rnd
             if change_percent > stock.volatility:
                 change_percent -= (2 * stock.volatility)
@@ -75,7 +85,7 @@ def update_stock(upd_stocks, interval_in_seconds):
                 stock.high = round(new_price, 4)
             if new_price < stock.low:
                 stock.low = round(new_price, 4)
-            stock.timestamp = datetime.datetime.now()
+            stock.timestamp += timedelta(days=1)
             stock.volume = round(stock.volume * volume_change)
             stock.market_cap = round(stock.market_cap + (stock.market_cap * change_percent), 2)
             stock.price = round(new_price, 4)
@@ -90,9 +100,15 @@ def update_stock(upd_stocks, interval_in_seconds):
                                PartitionKey='trans key')
             except:
                 traceback.print_exc()
-        time.sleep(2)
+            if day == 365:
+                last_price = stock.price
+        print("Day: ", day)
+        day += 1
+        time.sleep(interval_in_seconds)
+    print("Yearly Change %: ", ((last_price - first_price) / first_price) * 100)
+    print("neg: ", neg_count, "  pos: ", pos_count)
 
 
 if __name__ == '__main__':
     stocks = get_initial_stock("nasdaq_tickers.csv", 1)
-    update_stock(stocks, 2)
+    update_stock(stocks, 0, 1)
