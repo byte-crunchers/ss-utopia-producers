@@ -1,3 +1,6 @@
+
+import transaction_producer.transaction_producer as tp
+import time
 import json
 import os
 import random
@@ -20,9 +23,8 @@ my_config = Config(
 def loopers(accounts: tuple, fake: Faker, kin) -> None:
     accounts_sample = random.sample(accounts, 2)  # use so that we can have two random, unique accounts
     trans = tp.Transaction(fake, accounts_sample[0][0], accounts_sample[1][0])
-    trans
-    trans.type = 'transaction'  # for the consumer to know what type of message it is
-    print(json.dumps(trans.__dict__, default=str))
+    trans.type = 'transaction' #for the consumer to know what type of message it is
+    #print(json.dumps(trans.__dict__, default=str))
     kin.put_record(StreamName='byte-henry', Data=json.dumps(trans.__dict__, default=str), PartitionKey='trans key')
 
 
