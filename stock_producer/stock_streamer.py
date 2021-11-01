@@ -110,5 +110,5 @@ def update_stock(upd_stocks, interval_in_seconds, years):
 
 
 if __name__ == '__main__':
-    stocks = get_initial_stock("nasdaq_tickers.csv", 2)
+    stocks = get_initial_stock("nasdaq_tickers.csv", 1)
     update_stock(stocks, 0, 1)
