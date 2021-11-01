@@ -1,11 +1,12 @@
 import pytest
+import os
 import transaction_producer.transaction_producer as tp
 import jaydebeapi
 
 
 @pytest.fixture(scope="module", autouse=True)
 def connect_h2():
-    con = jaydebeapi.connect("org.h2.Driver", "jdbc:h2:tcp://localhost/~/test;MODE=MySQL", ["sa", ""], "E:/Program Files (x86)/H2/bin/h2-1.4.200.jar" )
+    con = jaydebeapi.connect("org.h2.Driver", "jdbc:h2:tcp://localhost/~/test;MODE=MySQL", ["sa", ""], os.environ.get("H2") )
     con.cursor().execute("set schema bytecrunchers")
     con.jconn.setAutoCommit(False)
     return con

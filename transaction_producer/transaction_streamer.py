@@ -1,4 +1,4 @@
-import transaction_producer as tp
+import transaction_producer.transaction_producer as tp
 import time
 import json
 import boto3
@@ -10,7 +10,7 @@ def loopers(accounts: tuple, fake: Faker, kin ) -> None:
     trans = tp.Transaction(fake, accounts_sample[0][0], accounts_sample[1][0])
     trans 
     trans.type = 'transaction' #for the consumer to know what type of message it is
-    print(json.dumps(trans.__dict__, default=str))
+    #print(json.dumps(trans.__dict__, default=str))
     kin.put_record(StreamName='byte-henry', Data=json.dumps(trans.__dict__, default=str), PartitionKey='trans key')
     
 
@@ -29,5 +29,5 @@ def stream(interval: float = 5, chance: float = 1) -> None:
         time.sleep(interval)
 
 if __name__ == "__main__":
-    stream(0.4, 0.2)
+    stream(0.00, 0.8)
     
