@@ -45,7 +45,7 @@ class Card:
                 self.pin = None
             self.cvc1 = random.randint(0,999)
             self.cvc2 = random.randint(0,999)
-            self.exp_date = datetime.date.today() + datetime.timedelta(days = random.randrange(-5,1000))
+            self.exp_date = datetime.date.today() + datetime.timedelta(days = random.randrange(-80,1000))
 
     def build_number(self):
         left15 = '431923' + str(random.randint(0, 999999999))

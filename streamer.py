@@ -16,23 +16,7 @@ mask_ct = 2
 mask_lp = 4
 mask_stock = 8
 
-
-def loopers(accounts: tuple, cards:tuple, fake: Faker, kin ) -> None:
-
-    account = random.choice(accounts)
-    card = random.choice(cards)
-    trans = tp.Card_Transaction(fake, card[0], account[0], pin=card[1])
-    if random.random() < 0.25: #1/4 chance of a mag-swipe, 1/4 its amazon, 2/4 online/phone transaction from a reputable store
-        trans.cvc1 = card[2]
-    elif random.random() <0.33:
-        pass #amazon does not use cvc because they don't care about the consumer
-    else:
-        trans.cvc2 = card[3]
-
-    trans.type = 'card_transaction' #for the consumer to know what type of message it is
-    #print(json.dumps(trans.__dict__, default=str))
-    kin.put_record(StreamName='byte-henry', Data=json.dumps(trans.__dict__, default=str), PartitionKey='card trans key')
-    
+   
 
 def stream(options: int = 0b1111, interval: float = 5, chance: float = 1) -> None:
     conn = tp.connect()

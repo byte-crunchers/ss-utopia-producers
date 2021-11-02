@@ -67,12 +67,12 @@ def create_account(user, account_type):  # takes user account number, returns ac
         account.payment_due = account.balance * -0.10  # pay 10%
         account.due_date = datetime.date.today() + datetime.timedelta(days=random.randrange(1, 31))
         account.interest = random.random() * 0.1 + 0.03  # random interest from 3% to 13%
-    if random.random() < 0.9:  # chance the user confirmed their account over email
+    if random.random() < 0.95:  # chance the user confirmed their account over email
         account.confirmed = True
         if (    # chance that credit card is approved
-                random.random() < 0.75 or account_type == "Checking" or account_type == "Savings"):
+                random.random() < 0.95 or account_type == "Checking" or account_type == "Savings"):
             account.approved = True
-            if random.random() < 0.9:  # chance user hasn't closed the account
+            if random.random() < 0.95:  # chance user hasn't closed the account
                 account.active = True
 
     return account

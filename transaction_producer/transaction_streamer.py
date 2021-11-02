@@ -1,4 +1,3 @@
-
 import transaction_producer.transaction_producer as tp
 import time
 import json
@@ -9,8 +8,6 @@ import time
 import boto3
 from botocore.config import Config
 from faker import Faker
-
-import transaction_producer as tp
 
 access_key = os.environ.get("ACCESS_KEY")
 secret_key = os.environ.get("SECRET_KEY")

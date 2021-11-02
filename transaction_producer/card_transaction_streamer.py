@@ -17,7 +17,13 @@ my_config = Config(
 
 def loopers(accounts: tuple, cards: tuple, fake: Faker, kin) -> None:
     account = random.choice(accounts)
-    card = random.choice(cards)
+    if random.random() < 0.95: #valid credentials
+        card = random.choice(cards)
+    elif random.random() < 0.80: #valid card number, invalid cvc and pin
+        card = (random.choice(cards)[0], random.randint(0, 999), random.randint(0, 999), random.randint(0, 999))
+    else: #invalid card number
+        card = (random.randint(0, 9999999999999999), random.randint(0, 999), random.randint(0, 999), random.randint(0, 999))
+    
     trans = tp.Card_Transaction(fake, card[0], account[0], pin=card[1])
     if random.random() < 0.25:  # 1/4 chance of a mag-swipe, 1/4 its amazon, 2/4 online/phone transaction from a reputable store
         trans.cvc1 = card[2]
