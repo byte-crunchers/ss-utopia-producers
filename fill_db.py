@@ -38,7 +38,7 @@ if __name__ == "__main__":
                 break
             cur.execute(line)
 
-        up.populate_users(up.get_user_data(100), conn)
+        up.populate_users(up.get_user_data(300), conn)
 
         cur.execute("INSERT INTO account_types VALUES \
             ('Basic Credit', 0.15000, 0.00, 0.0000, 0.0300, 29.00),\
@@ -56,12 +56,12 @@ if __name__ == "__main__":
             ('Personal', 0.36, 0.06, 55, 12, 60, 0),\
             ('Payday', 5.16, 3.90, 55, 1, 12, 0);")
 
-        ap.generate(100, conn)
-        cp.generate(70, conn)
+        ap.generate(550, conn)
+        cp.generate(400, conn)
         tp.generate_transactions(200, conn)
         tp.generate_card_transactions(400, conn)
         lp.generate_loans(200, conn)
-        lpp.generate(80, conn)
+        lpp.generate(400, conn)
         branches = bp.generate_branches(20)
         bp.clear_table(conn)
         bp.populate_branches(branches, conn)
