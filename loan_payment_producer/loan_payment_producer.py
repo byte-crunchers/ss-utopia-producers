@@ -47,7 +47,7 @@ def generate(num_rows, conn):
     if len(accounts) == 0 or len(loans) == 0:
         print("ERROR: missing accounts from database")
         raise Exception('Missing data')
-    query = 'INSERT INTO loan_payments(loan_id, account_id, amount, time_stamp, status) VALUES (?,?,?,?,?)'
+    query = 'INSERT INTO loan_payments(loan_id, account_id, amount, date_time, status) VALUES (?,?,?,?,?)'
     cur = conn.cursor()
     for i in range(num_rows):
         pmnt = Payment(random.choice(loans)[0], random.choice(accounts)[0])
