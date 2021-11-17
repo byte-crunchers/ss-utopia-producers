@@ -173,7 +173,7 @@ CREATE TABLE "loan_payments" (
   "loan_id" int unsigned NOT NULL,
   "account_id" int unsigned NOT NULL,
   "amount" decimal(10,2) NOT NULL,
-  "time_stamp" datetime NOT NULL,
+  "date_time" datetime NOT NULL,
   "status" tinyint NOT NULL);
 
 --
