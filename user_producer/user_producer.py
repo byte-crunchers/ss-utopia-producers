@@ -1,8 +1,10 @@
+import base64
 import random
 import traceback
 
 import bcrypt
 import jaydebeapi
+from cryptography.fernet import Fernet
 from faker import Faker
 from pyzipcode import ZipCodeDatabase
 from random_username.generate import generate_username
@@ -16,7 +18,7 @@ for x in zip_database:
 
 class User:
     def __init__(self, user, email, password, f_name, l_name, is_admin, ssn, active, confirmed, phone, dob,
-                 street_address, city, state, zip_code):
+                 street_address, city, state, zip_code, approved):
         self.user = user
         self.email = email
         self.password = password
@@ -32,6 +34,7 @@ class User:
         self.city = city
         self.state = state
         self.zip_code = zip_code
+        self.approved = 0
 
     def print_user(self):
         print(
@@ -46,11 +49,12 @@ def populate_users(user_data, pop_conn):
     dd_count = 0
     curs = pop_conn.cursor()
     query = "INSERT INTO users(username, email, password, first_name, last_name, is_admin, ssn, active, " \
-            "confirmed, phone, dob, street_address, city, state, zip) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, " \
-            "?, ?, ?) "
+            "confirmed, phone, dob, street_address, city, state, zip, approved) VALUES(?, ?, ?, ?, ?, ?, ?," \
+            " ?, ?, ?, ?, ?, ?, ?, ?, ?) "
     for user in user_data:
         vals = (user.user, user.email, user.password, user.f_name, user.l_name, user.is_admin, user.ssn, user.active,
-                user.confirmed, user.phone, str(user.dob), user.street_address, user.city, user.state, user.zip_code)
+                user.confirmed, user.phone, str(user.dob), user.street_address, user.city, user.state, user.zip_code,
+                user.approved)
         try:
             curs.execute(query, vals)
         except jaydebeapi.DatabaseError:  # Check for Duplicates
@@ -59,12 +63,12 @@ def populate_users(user_data, pop_conn):
             # Find a unique username and email that is not in the database
             while True:
                 query = "INSERT INTO users(username, email, password, first_name, last_name, is_admin, ssn, active, " \
-                        "confirmed, phone, dob, street_address, city, state, zip) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, " \
-                        "?, ?, ?, ?, ?, ?) "
+                        "confirmed, phone, dob, street_address, city, state, zip, approved) VALUES(?, ?, ?, ?, ?, ?," \
+                        " ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
                 try:
                     vals = (get_username(), get_email(user.f_name, user.l_name), user.password, user.f_name,
                             user.l_name, user.is_admin, get_ssn(), user.active, user.confirmed, user.phone,
-                            str(user.dob), user.street_address, user.city, user.state, user.zip_code)
+                            str(user.dob), user.street_address, user.city, user.state, user.zip_code, user.approved)
                     curs.execute(query, vals)
                     break
                 except jaydebeapi.DatabaseError:
@@ -85,10 +89,10 @@ def get_user_data(num_of_users):
         state = get_zip_and_state()[1]
         zip_code = get_zip_and_state()[0]
         users.append(
-            User(get_username(), get_email(f_name, l_name), get_pass(), f_name, l_name, get_is_admin(), get_ssn(),
+            User(get_username(), get_email(f_name, l_name), get_pass(), f_name, l_name, get_is_admin(), get_ssn()[0],
                  get_active(), get_confirmed(), int(fake.numerify('##########')),
                  fake.date_between(start_date='-100y', end_date='-18y'), get_street_address(), fake.city(),
-                 state, zip_code)
+                 state, zip_code, 0)
         )
     return users
 
@@ -170,7 +174,12 @@ def get_zip_and_state():
 
 def get_ssn():
     ssn = fake.ssn().replace('-', "").strip()
-    return ssn
+    key = Fernet.generate_key()
+    fernet = Fernet(key)
+    enc_ssn = fernet.encrypt(ssn.encode())
+    dec_ssn = fernet.decrypt(enc_ssn).decode()
+    # print("org: ", ssn, "  || key: ", key, "  || enc: ",  enc_ssn.decode("utf-8"), "  || ", "  || dec: ", dec_ssn)
+    return enc_ssn.decode("utf-8"), key, ssn
 
 
 def execute_scripts_from_file(filename, conn):
@@ -194,3 +203,7 @@ def execute_scripts_from_file(filename, conn):
             curs.execute(command)
         except (jaydebeapi.OperationalError, jaydebeapi.DatabaseError, Exception):
             print("\nCould not execute: " + command + "\n")
+
+
+def base64ToString(b):
+    return base64.b64decode(b).decode('utf-8')

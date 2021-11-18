@@ -1,8 +1,10 @@
-import jaydebeapi
-import pytest
 import os
 
-from user_producer import populate_users, execute_scripts_from_file, get_user_data
+import jaydebeapi
+import pytest
+from cryptography.fernet import Fernet
+
+from user_producer import populate_users, execute_scripts_from_file, get_user_data, get_ssn
 
 script_dir = os.path.dirname(__file__)
 schema_path = os.path.join(script_dir, "../schema_h2.sql")
@@ -59,6 +61,17 @@ def test_populate_large(connect_h2):
     curs.execute("SELECT COUNT(*) FROM users")  # Get row count of table
     assert (0 == curs.fetchmany(size=1)[0][0])  # Test that the table is empty
     connect_h2.rollback()
+
+
+def test_ssn_encrypt():
+    [enc_ssn, key, ssn] = get_ssn()
+    fernet = Fernet(key)
+    dec_ssn = fernet.decrypt(stringToBase64(enc_ssn)).decode()
+    assert (dec_ssn == ssn)
+
+
+def stringToBase64(s):
+    return s.encode('utf-8')
 
 
 if __name__ == '__main__':
