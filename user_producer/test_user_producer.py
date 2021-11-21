@@ -63,11 +63,18 @@ def test_populate_large(connect_h2):
     connect_h2.rollback()
 
 
-def test_ssn_encrypt():
-    [enc_ssn, key, ssn] = get_ssn()
-    fernet = Fernet(key)
-    dec_ssn = fernet.decrypt(stringToBase64(enc_ssn)).decode()
-    assert (dec_ssn == ssn)
+def test_ssn_encrypt(connect_h2):
+    curs = connect_h2.cursor()
+    populate_users(get_user_data(1), connect_h2)
+    curs.execute("SELECT * FROM users")
+    user = curs.fetchall()[0]
+    username = user[1]
+    enc_ssn = user[7]
+    print(username)
+    print(enc_ssn)
+    # fernet = Fernet(key)
+    # dec_ssn = fernet.decrypt(stringToBase64(enc_ssn)).decode()
+    # assert (dec_ssn == ssn)
 
 
 def stringToBase64(s):
@@ -76,3 +83,5 @@ def stringToBase64(s):
 
 if __name__ == '__main__':
     pytest.main()
+
+
