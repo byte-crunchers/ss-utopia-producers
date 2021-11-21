@@ -29,7 +29,7 @@ def connect():
 
 if __name__ == '__main__':
     conn = connect()
-    users = get_user_data(1)
+    users = get_user_data(100)
     populate_users(users, conn)
     conn.commit()
     conn.close()

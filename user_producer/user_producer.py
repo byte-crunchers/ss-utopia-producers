@@ -29,7 +29,7 @@ for x in zip_database:
 
 class User:
     def __init__(self, user, email, password, f_name, l_name, is_admin, ssn, active, confirmed, phone, dob,
-                 street_address, city, state, zip_code, approved, key):
+                 street_address, city, state, zip_code, approved, key, secret_name):
         self.user = user
         self.email = email
         self.password = password
@@ -47,6 +47,7 @@ class User:
         self.zip_code = zip_code
         self.approved = 0
         self.key = key
+        self.secret_name = ""
 
     def print_user(self):
         print(
@@ -57,6 +58,10 @@ class User:
 
 
 def populate_users(user_data, pop_conn):
+    json_str = "{"
+    possible_characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890"
+    random_suffix = "".join([random.choice(possible_characters) for _ in range(20)])
+    secret_name = "USER_BATCH_" + random_suffix
     duplicate_count = 0
     dd_count = 0
     curs = pop_conn.cursor()
@@ -78,7 +83,9 @@ def populate_users(user_data, pop_conn):
                         "confirmed, phone, dob, street_address, city, state, zip, approved) VALUES(?, ?, ?, ?, ?, ?," \
                         " ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
                 try:
-                    vals = (get_username(), get_email(user.f_name, user.l_name), user.password, user.f_name,
+                    user.user = get_username()
+                    user.email = get_email(user.f_name, user.l_name)
+                    vals = (user.user, user.email, user.password, user.f_name,
                             user.l_name, user.is_admin, get_ssn(), user.active, user.confirmed, user.phone,
                             str(user.dob), user.street_address, user.city, user.state, user.zip_code, user.approved)
                     curs.execute(query, vals)
@@ -89,9 +96,11 @@ def populate_users(user_data, pop_conn):
         except Exception:
             print("There was a problem writing to the database. ")
             traceback.print_exc()
-
-    secret_name = user.user
-    create_aws_secret(secret_name, user.key.decode("UTF-8"))
+        json_str += "\"" + user.user + "\":\"" + user.key.decode("UTF-8") + "\","
+        user.secret_name = secret_name
+    json_str = json_str[:-1]
+    json_str += "}"
+    create_aws_secret(secret_name, json_str)
     print("\n{} duplicate usernames or emails were generated and replaced!".format(duplicate_count))
     print("{} double duplicate usernames or emails were generated and replaced!".format(dd_count))
 
@@ -109,7 +118,7 @@ def get_user_data(num_of_users):
             User(user_name, get_email(f_name, l_name), get_pass(), f_name, l_name, get_is_admin(), enc_ssn,
                  get_active(), get_confirmed(), int(fake.numerify('##########')),
                  fake.date_between(start_date='-100y', end_date='-18y'), get_street_address(), fake.city(),
-                 state, zip_code, 0, key)
+                 state, zip_code, 0, key, "")
         )
     return users
 
