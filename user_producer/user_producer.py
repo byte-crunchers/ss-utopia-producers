@@ -204,8 +204,6 @@ def get_ssn():
     key = Fernet.generate_key()
     fernet = Fernet(key)
     enc_ssn = fernet.encrypt(ssn.encode())
-    # dec_ssn = fernet.decrypt(enc_ssn).decode()
-    # print("org: ", ssn, "  || key: ", key, "  || enc: ",  enc_ssn.decode("utf-8"), "  || ", "  || dec: ", dec_ssn)
     return enc_ssn.decode("utf-8"), key, ssn
 
 
