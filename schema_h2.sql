@@ -259,7 +259,7 @@ CREATE TABLE "users" (
   "first_name" varchar(50) NOT NULL,
   "last_name" varchar(50) NOT NULL,
   "is_admin" tinyint NOT NULL,
-  "ssn" decimal(9,0) DEFAULT NULL,
+  "ssn" varchar(200) DEFAULT NULL,
   "active" tinyint DEFAULT NULL,
   "confirmed" tinyint DEFAULT NULL,
   "phone" decimal(10,0) DEFAULT NULL,
@@ -267,7 +267,9 @@ CREATE TABLE "users" (
   "street_address" varchar(95) DEFAULT NULL,
   "city" varchar(35) DEFAULT NULL,
   "state" char(2) DEFAULT NULL,
-  "zip" varchar(5) DEFAULT NULL);
+  "zip" varchar(5) DEFAULT NULL,
+  "approved" bit(1) NOT NULL,
+  "secret_name" varchar(31) NOT NULL);
 
 --
 -- Dumping data for table "users"

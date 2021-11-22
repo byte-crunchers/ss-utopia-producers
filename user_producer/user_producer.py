@@ -1,11 +1,24 @@
+import base64
 import random
 import traceback
-
+import boto3
+import base64
+from botocore.exceptions import ClientError
 import bcrypt
 import jaydebeapi
+from cryptography.fernet import Fernet
 from faker import Faker
 from pyzipcode import ZipCodeDatabase
 from random_username.generate import generate_username
+
+region_name = "us-east-1"
+
+# Create a Secrets Manager client
+session = boto3.session.Session()
+client = session.client(
+    service_name='secretsmanager',
+    region_name=region_name
+)
 
 fake = Faker()
 zip_database = ZipCodeDatabase()
@@ -16,7 +29,7 @@ for x in zip_database:
 
 class User:
     def __init__(self, user, email, password, f_name, l_name, is_admin, ssn, active, confirmed, phone, dob,
-                 street_address, city, state, zip_code):
+                 street_address, city, state, zip_code, approved, key, secret_name, unc_ssn):
         self.user = user
         self.email = email
         self.password = password
@@ -32,6 +45,10 @@ class User:
         self.city = city
         self.state = state
         self.zip_code = zip_code
+        self.approved = 0
+        self.key = key
+        self.secret_name = ""
+        self.unc_ssn = unc_ssn
 
     def print_user(self):
         print(
@@ -42,29 +59,37 @@ class User:
 
 
 def populate_users(user_data, pop_conn):
+    json_str = "{"
+    possible_characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890"
+    random_suffix = "".join([random.choice(possible_characters) for _ in range(20)])
+    secret_name = "USER_BATCH_" + random_suffix
     duplicate_count = 0
     dd_count = 0
     curs = pop_conn.cursor()
     query = "INSERT INTO users(username, email, password, first_name, last_name, is_admin, ssn, active, " \
-            "confirmed, phone, dob, street_address, city, state, zip) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, " \
-            "?, ?, ?) "
+            "confirmed, phone, dob, street_address, city, state, zip, approved, secret_name) VALUES(?, ?, ?, ?, ?, " \
+            "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
     for user in user_data:
+        user.secret_name = secret_name
         vals = (user.user, user.email, user.password, user.f_name, user.l_name, user.is_admin, user.ssn, user.active,
-                user.confirmed, user.phone, str(user.dob), user.street_address, user.city, user.state, user.zip_code)
+                user.confirmed, user.phone, str(user.dob), user.street_address, user.city, user.state, user.zip_code,
+                user.approved, user.secret_name)
         try:
             curs.execute(query, vals)
-        except jaydebeapi.DatabaseError:  # Check for Duplicates
-            traceback.print_exc()
+        except (jaydebeapi.DatabaseError, Exception):  # Check for Duplicates
             duplicate_count += 1
             # Find a unique username and email that is not in the database
             while True:
                 query = "INSERT INTO users(username, email, password, first_name, last_name, is_admin, ssn, active, " \
-                        "confirmed, phone, dob, street_address, city, state, zip) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, " \
-                        "?, ?, ?, ?, ?, ?) "
+                        "confirmed, phone, dob, street_address, city, state, zip, approved, secret_name)" \
+                        " VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) "
                 try:
-                    vals = (get_username(), get_email(user.f_name, user.l_name), user.password, user.f_name,
-                            user.l_name, user.is_admin, get_ssn(), user.active, user.confirmed, user.phone,
-                            str(user.dob), user.street_address, user.city, user.state, user.zip_code)
+                    user.user = get_username()
+                    user.email = get_email(user.f_name, user.l_name)
+                    vals = (user.user, user.email, user.password, user.f_name,
+                            user.l_name, user.is_admin, user.ssn, user.active, user.confirmed, user.phone,
+                            str(user.dob), user.street_address, user.city, user.state, user.zip_code, user.approved,
+                            user.secret_name)
                     curs.execute(query, vals)
                     break
                 except jaydebeapi.DatabaseError:
@@ -73,6 +98,10 @@ def populate_users(user_data, pop_conn):
         except Exception:
             print("There was a problem writing to the database. ")
             traceback.print_exc()
+        json_str += "\"" + user.user + "\":\"" + user.key.decode("UTF-8") + "\","
+    json_str = json_str[:-1]
+    json_str += "}"
+    create_aws_secret(secret_name, json_str)
     print("\n{} duplicate usernames or emails were generated and replaced!".format(duplicate_count))
     print("{} double duplicate usernames or emails were generated and replaced!".format(dd_count))
 
@@ -84,11 +113,13 @@ def get_user_data(num_of_users):
         l_name = fake.last_name()
         state = get_zip_and_state()[1]
         zip_code = get_zip_and_state()[0]
+        user_name = get_username()
+        [enc_ssn, key, ssn] = get_ssn()
         users.append(
-            User(get_username(), get_email(f_name, l_name), get_pass(), f_name, l_name, get_is_admin(), get_ssn(),
+            User(user_name, get_email(f_name, l_name), get_pass(), f_name, l_name, get_is_admin(), enc_ssn,
                  get_active(), get_confirmed(), int(fake.numerify('##########')),
                  fake.date_between(start_date='-100y', end_date='-18y'), get_street_address(), fake.city(),
-                 state, zip_code)
+                 state, zip_code, 0, key, "", ssn)
         )
     return users
 
@@ -170,7 +201,10 @@ def get_zip_and_state():
 
 def get_ssn():
     ssn = fake.ssn().replace('-', "").strip()
-    return ssn
+    key = Fernet.generate_key()
+    fernet = Fernet(key)
+    enc_ssn = fernet.encrypt(ssn.encode())
+    return enc_ssn.decode("utf-8"), key, ssn
 
 
 def execute_scripts_from_file(filename, conn):
@@ -194,3 +228,66 @@ def execute_scripts_from_file(filename, conn):
             curs.execute(command)
         except (jaydebeapi.OperationalError, jaydebeapi.DatabaseError, Exception):
             print("\nCould not execute: " + command + "\n")
+
+
+def base64ToString(b):
+    return base64.b64decode(b).decode('utf-8')
+
+
+def get_secret(secret_name):
+    try:
+        get_secret_value_response = client.get_secret_value(
+            SecretId=secret_name
+        )
+    except ClientError as e:
+        if e.response['Error']['Code'] == 'DecryptionFailureException':
+            # Secrets Manager can't decrypt the protected secret text using the provided KMS key.
+            # Deal with the exception here, and/or rethrow at your discretion.
+            raise e
+        elif e.response['Error']['Code'] == 'InternalServiceErrorException':
+            # An error occurred on the server side.
+            # Deal with the exception here, and/or rethrow at your discretion.
+            raise e
+        elif e.response['Error']['Code'] == 'InvalidParameterException':
+            # You provided an invalid value for a parameter.
+            # Deal with the exception here, and/or rethrow at your discretion.
+            raise e
+        elif e.response['Error']['Code'] == 'InvalidRequestException':
+            # You provided a parameter value that is not valid for the current state of the resource.
+            # Deal with the exception here, and/or rethrow at your discretion.
+            raise e
+        elif e.response['Error']['Code'] == 'ResourceNotFoundException':
+            # We can't find the resource that you asked for.
+            # Deal with the exception here, and/or rethrow at your discretion.
+            raise e
+    else:
+        # Decrypts secret using the associated KMS CMK.
+        # Depending on whether the secret is a string or binary, one of these fields will be populated.
+        if 'SecretString' in get_secret_value_response:
+            secret = get_secret_value_response['SecretString']
+            return secret
+        else:
+            decoded_binary_secret = base64.b64decode(get_secret_value_response['SecretBinary'])
+            return decoded_binary_secret
+
+
+def create_aws_secret(name, secret_value):
+    """
+    Creates a new secret. The secret value can be a string or bytes.
+
+    :param name: The name of the secret to create.
+    :param secret_value: The value of the secret.
+    :return: Metadata about the newly created secret.
+    """
+    try:
+        kwargs = {'Name': name}
+        if isinstance(secret_value, str):
+            kwargs['SecretString'] = secret_value
+        elif isinstance(secret_value, bytes):
+            kwargs['SecretBinary'] = secret_value
+        response = client.create_secret(**kwargs)
+    except ClientError:
+        print("Couldn't get secret %s.", name)
+        raise
+    else:
+        return response

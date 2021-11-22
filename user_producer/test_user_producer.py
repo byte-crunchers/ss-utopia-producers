@@ -1,8 +1,11 @@
-import jaydebeapi
-import pytest
 import os
 
-from user_producer import populate_users, execute_scripts_from_file, get_user_data
+import jaydebeapi
+import pytest
+from cryptography.fernet import Fernet
+import json
+
+from user_producer import populate_users, execute_scripts_from_file, get_user_data, get_secret
 
 script_dir = os.path.dirname(__file__)
 schema_path = os.path.join(script_dir, "../schema_h2.sql")
@@ -61,5 +64,30 @@ def test_populate_large(connect_h2):
     connect_h2.rollback()
 
 
+def test_ssn_encrypt(connect_h2):
+    curs = connect_h2.cursor()
+    test_user_list = get_user_data(1)
+    curs.execute("DELETE FROM users")
+    populate_users(test_user_list, connect_h2)
+    curs.execute("SELECT * FROM users")
+    user = curs.fetchall()[0]
+    dec_ssn = test_user_list[0].unc_ssn
+    enc_ssn = user[7]
+    secret_name = user[17]
+    username = user[1]
+    secret_json_string = get_secret(secret_name)
+    json_data = json.loads(secret_json_string)
+    key = (json_data[username]) # Printing key
+    fernet = Fernet(key)
+    decoded_ssn = fernet.decrypt(stringToBase64(enc_ssn)).decode()
+    assert (decoded_ssn == dec_ssn)
+
+
+def stringToBase64(s):
+    return s.encode('utf-8')
+
+
 if __name__ == '__main__':
     pytest.main()
+
+
