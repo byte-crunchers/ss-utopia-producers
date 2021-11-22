@@ -57,6 +57,7 @@ CREATE TABLE IF NOT EXISTS `bytecrunchers`.`users` (
   `state` CHAR(2) NULL,
   `zip` VARCHAR(5) NULL,
   `approved` bit(1) NOT NULL,
+  `secret_name` VARCHAR(31) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `username_UNIQUE` (`username` ASC) VISIBLE,
   UNIQUE INDEX `users_id_UNIQUE` (`id` ASC) VISIBLE,

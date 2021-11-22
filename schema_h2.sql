@@ -268,7 +268,8 @@ CREATE TABLE "users" (
   "city" varchar(35) DEFAULT NULL,
   "state" char(2) DEFAULT NULL,
   "zip" varchar(5) DEFAULT NULL,
-  "approved" bit(1) NOT NULL);
+  "approved" bit(1) NOT NULL,
+  "secret_name" varchar(31) NOT NULL);
 
 --
 -- Dumping data for table "users"
