@@ -17,12 +17,17 @@ my_config = Config(
 )
 
 
-def loopers(accounts: tuple, fake: Faker, kin) -> None:
+def loopers(accounts: tuple, fake: Faker, kin=None, kaf=None  ) -> None:
     accounts_sample = random.sample(accounts, 2)  # use so that we can have two random, unique accounts
     trans = tp.Transaction(fake, accounts_sample[0][0], accounts_sample[1][0])
     trans.type = 'transaction' #for the consumer to know what type of message it is
     #print(json.dumps(trans.__dict__, default=str))
-    kin.put_record(StreamName='byte-henry', Data=json.dumps(trans.__dict__, default=str), PartitionKey='trans key')
+    if random.random() < 0.02: #force db add to fail
+        trans.origin_accounts_id = -666 #RDS can't take it as it is negative
+    if kin: #If we're using kinesis this will be non-null
+        kin.put_record(StreamName='byte-henry', Data=json.dumps(trans.__dict__, default=str), PartitionKey='trans key')
+    elif kaf: #Streaming to Kafka on Axure
+        kaf.send('quickstart-events', value=trans)
 
 
 def stream(interval: float = 5, chance: float = 1) -> None:

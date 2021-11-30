@@ -37,7 +37,6 @@ class Account:
         self.active = False
         self.approved = False
         self.confirmed = False
-        self.limit = None
 
 
 def get_users(conn):
@@ -58,7 +57,6 @@ def create_account(user, account_type):  # takes user account number, returns ac
     account = Account()
     account.user = user
     account.account_type = account_type
-    account.limit = 10000
     if account_type == "Checking" or account_type == "Savings":  # non-loan accounts
         account.balance = random.uniform(0, 10000)
         account.payment_due = 0
@@ -89,8 +87,8 @@ def generate(num_rows, conn):
     users = random.sample(users_all, num_rows // 2 + 1)  # gets a random sampling of users
     # //2 means the average user will have two accounts
     query = "INSERT INTO `bytecrunchers`.`accounts` (`users_id`, `account_type`, `balance`, `payment_due`," \
-            " `due_date`, `credit_limit`, `debt_interest`, `active`, `approved`, `confirmed`, `limit`)" \
-            " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
+            " `due_date`, `credit_limit`, `debt_interest`, `active`, `approved`, `confirmed`)" \
+            " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"
     acc_types = get_account_types(conn)
     cur = conn.cursor()
     for i in range(num_rows):
@@ -98,7 +96,7 @@ def generate(num_rows, conn):
                                  random.choice(acc_types)[0])  # takes a random user id and account type
         vals = (account.user, account.account_type, account.balance, account.payment_due,
                 date_to_string(account.due_date), account.credit_limit, account.interest, account.active, account.approved,
-                account.confirmed, account.limit)
+                account.confirmed)
         try:
             cur.execute(query, vals)
         except Error:
