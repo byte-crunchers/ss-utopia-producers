@@ -28,11 +28,12 @@ for x in zip_database:
 
 
 class User:
-    def __init__(self, user, email, password, f_name, l_name, is_admin, ssn, active, confirmed, phone, dob,
+    def __init__(self, user, email, password, clearpass, f_name, l_name, is_admin, ssn, active, confirmed, phone, dob,
                  street_address, city, state, zip_code, approved, key, secret_name, unc_ssn):
         self.user = user
         self.email = email
         self.password = password
+        self.clearpass = clearpass #cleartext password for records. Not real user data so security doesn't matter
         self.f_name = f_name
         self.l_name = l_name
         self.is_admin = is_admin
@@ -59,6 +60,7 @@ class User:
 
 
 def populate_users(user_data, pop_conn):
+    passwords = open("passwords.txt", "w")
     json_str = "{"
     possible_characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890"
     random_suffix = "".join([random.choice(possible_characters) for _ in range(20)])
@@ -76,6 +78,7 @@ def populate_users(user_data, pop_conn):
                 user.approved, user.secret_name)
         try:
             curs.execute(query, vals)
+            passwords.write("{}, {}\n".format(user.user, user.clearpass))
         except (jaydebeapi.DatabaseError, Exception):  # Check for Duplicates
             duplicate_count += 1
             # Find a unique username and email that is not in the database
@@ -91,6 +94,7 @@ def populate_users(user_data, pop_conn):
                             str(user.dob), user.street_address, user.city, user.state, user.zip_code, user.approved,
                             user.secret_name)
                     curs.execute(query, vals)
+                    passwords.write("{}, {}\n".format(user.user, user.clearpass))
                     break
                 except jaydebeapi.DatabaseError:
                     dd_count += 1
@@ -104,6 +108,7 @@ def populate_users(user_data, pop_conn):
     create_aws_secret(secret_name, json_str)
     print("\n{} duplicate usernames or emails were generated and replaced!".format(duplicate_count))
     print("{} double duplicate usernames or emails were generated and replaced!".format(dd_count))
+    passwords.close()
 
 
 def get_user_data(num_of_users):
@@ -115,8 +120,9 @@ def get_user_data(num_of_users):
         zip_code = get_zip_and_state()[0]
         user_name = get_username()
         [enc_ssn, key, ssn] = get_ssn()
+        [password, clearpass] = get_pass()
         users.append(
-            User(user_name, get_email(f_name, l_name), get_pass(), f_name, l_name, get_is_admin(), enc_ssn,
+            User(user_name, get_email(f_name, l_name), password, clearpass, f_name, l_name, get_is_admin(), enc_ssn,
                  get_active(), get_confirmed(), int(fake.numerify('##########')),
                  fake.date_between(start_date='-100y', end_date='-18y'), get_street_address(), fake.city(),
                  state, zip_code, 0, key, "", ssn)
@@ -165,7 +171,7 @@ def get_pass():
                           "()*+,-./:;<=>?@[\]^_`{|}~"
     password = "".join([random.choice(possible_characters) for _ in range(password_length)])
     hashed = bcrypt.hashpw(password.encode('utf8'), bcrypt.gensalt(10))
-    return hashed
+    return hashed, password
 
 
 def get_is_admin():
