@@ -70,12 +70,12 @@ def generate_loans(num_rows, conn):
     users = get_users(conn)
     types = get_loan_types(conn)
     query = 'INSERT INTO loans(users_id, balance, interest_rate, due_date, payment_due, loan_type, monthly_payment, \
-        active, approved, confirmed, user_id) VALUES (?,?,?,?,?,?,?,?,?,?,?)'
+        active, approved, confirmed) VALUES (?,?,?,?,?,?,?,?,?,?)'
     cur = conn.cursor()
     for i in range(num_rows):
         loan = Loan(random.choice(users)[0], random.choice(types)[0])  # takes a random user id and a random loan_type
         vals = (loan.user_id, loan.balance, loan.interest_rate, str(loan.due_date), loan.payment_due, loan.type, \
-                loan.monthly, loan.active, loan.approved, loan.confirmed, loan.user_id)
+                loan.monthly, loan.active, loan.approved, loan.confirmed)
         cur.execute(query, vals)
 
 
