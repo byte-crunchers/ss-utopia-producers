@@ -15,7 +15,7 @@ my_config = Config(
 )
 
 
-def loopers(accounts: tuple, cards: tuple, fake: Faker, kin) -> None:
+def loopers(accounts: tuple, cards: tuple, fake: Faker, kin, kaf) -> None:
     account = random.choice(accounts)
     if random.random() < 0.95: #valid credentials
         card = random.choice(cards)
@@ -34,8 +34,10 @@ def loopers(accounts: tuple, cards: tuple, fake: Faker, kin) -> None:
 
     trans.type = 'card_transaction' #for the consumer to know what type of message it is
     #print(json.dumps(trans.__dict__, default=str))
-    kin.put_record(StreamName='byte-henry', Data=json.dumps(trans.__dict__, default=str), PartitionKey='card trans key')
-
+    if kin: #If we're using kinesis this will be non-null
+        kin.put_record(StreamName='byte-henry', Data=json.dumps(trans.__dict__, default=str), PartitionKey='card trans key')
+    elif kaf: #Streaming to Kafka on Axure
+        kaf.send('quickstart-events', value=trans)
 
 def stream(interval: float = 5, chance: float = 1) -> None:
     conn = tp.connect()

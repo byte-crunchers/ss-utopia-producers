@@ -45,7 +45,11 @@ class Card_Transaction:
         self.cvc1 = cvc1
         self.cvc2 = cvc2
         self.time_stamp = datetime.datetime.now()
-        self.location = random.choice(country_codes)
+        #most transactions should come from the US
+        if random.random() < 0.01:
+            self.location = random.choice(country_codes)
+        else:
+            self.location = "US"
         self.status = 0
         
 def get_accounts(conn):
